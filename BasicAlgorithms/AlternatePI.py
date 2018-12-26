@@ -7,7 +7,7 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
 
     polC = InitPolicy()
     polR = InitPolicy()
-
+    # here we must implement the new alternative PI
 
 def PossibleStates(states, actions, grid, rows, col, wall, mult):
 
