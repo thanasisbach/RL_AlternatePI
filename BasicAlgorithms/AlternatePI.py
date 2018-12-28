@@ -66,7 +66,7 @@ def InitPolicy():  # policy (random) initialization
     return pol
 
 
-def DecombinePolicy(policy):
+def DecombinePolicy(policy):  # Information aliasing problem was detected here
 
     for i in policy:
         if i == 0:  # right
