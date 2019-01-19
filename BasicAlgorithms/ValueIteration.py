@@ -22,7 +22,7 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
         for s in states:
             if (grid[s] // mult == wall // mult) and (grid[s] % mult == wall % mult):
                 continue
-
+                
             v_best = Value[s]  # we assume that the current value is the best and we improve it
             cnt = 0
             for a in nActions[s]:
