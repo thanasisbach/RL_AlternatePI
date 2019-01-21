@@ -55,7 +55,7 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
     print(iter)
     GraphThePolicy(policy, Value, numR, numC)
 
-    return Value
+    return Value, policy
 
 
 def PossibleStates(states, actions, grid, rows, col, wall, mult):
