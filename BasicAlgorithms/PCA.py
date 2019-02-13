@@ -68,18 +68,24 @@ def draw_vector(v0, v1, ax=None):
 def procedurePCA(valueMatrix, r, c):
     Matrix = shapeMat(valueMatrix, r, c)
     # TODO find a way to compute all pca in a method
+    M = np.array(Matrix)
+    mm = []
+    for i in range(r):
+        for j in range(c):
+            mm.append( np.array([M[i, :], M[:, j]]).T )
+
     # So now we are going to separate the features (rows and columns)
-    dimI0 = Matrix[0]
-    dimI1 = Matrix[1]
-    dimI2 = Matrix[2]
+    dimI0 = M[0, :]
+    dimI1 = M[1, :]
+    dimI2 = M[2, :]
 
-    dimJ0 = [Matrix[0][0], Matrix[1][0], Matrix[2][0]]
-    dimJ1 = [Matrix[0][1], Matrix[1][1], Matrix[2][1]]
-    dimJ2 = [Matrix[0][2], Matrix[1][2], Matrix[2][2]]
+    dimJ0 = M[:, 0]
+    dimJ1 = M[:, 1]
+    dimJ2 = M[:, 2]
 
-    mm = [dimI2, dimJ2]
-    mm = np.array(mm).T
-    mm1 = mm - np.mean(mm, axis=0)
+    # mm = np.array([dimI2, dimJ2]).T
+    # mm = np.array(mm).T
+    mm1 = mm[20] - np.mean(mm[20], axis=0)
     n_samples = len(mm1[:, 0]) + len(mm1[:, 1])
     Cov = np.dot(mm1.T, mm1) / n_samples
 
@@ -93,9 +99,9 @@ def procedurePCA(valueMatrix, r, c):
     # plotFeatures(dimI2, dimJ0, "Row 2 - Column 0")
 
 
-    print(mm[:, 0], mm[:, 1])
+    print(mm[20][:, 0], mm[20][:, 1])
     pca2 = pca1(n_components=2, whiten=True)
-    pca2.fit(mm)
+    pca2.fit(mm[20])
 
     plotFeatures(mm1[:, 0], mm1[:, 1], "From PCA library", pca2.components_[0, :], pca2.components_[1, :])
     plt.show()
