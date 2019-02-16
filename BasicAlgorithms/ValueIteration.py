@@ -44,3 +44,4 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
     print(iter)
 
     pi.GraphThePolicy(policy, Value, numR, numC)
+    return Value, policy
