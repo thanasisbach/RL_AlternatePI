@@ -11,7 +11,7 @@ class AltMDP:
         self.goal = goal
 
         self.numActions = []  # this variable tell us how many actions i have from a state
-        self.actions = []  # [0, 1, 2, 3, 4, 5, 6, 7, 8] all actions
+        self.actions = [0, 1, 2, 3, 4, 5, 6, 7, 8] #  all actions
         self.actionsA = [0, 1, 8]  # right-0, left-1, do-noth-8
         self.actionsB = [2, 3, 8]  # up-2, down-3, do-noth-8
 
@@ -43,6 +43,7 @@ class AltMDP:
                 self.numActions.append(0)  # combines actions of the two dimensions
                 cnt += 1
                 # self.reward.append(0)
+
 
     def InitRnT(self):
         # print(self.mult)

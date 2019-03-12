@@ -78,7 +78,7 @@ def neighboors(states, actions, grid, goal, wall, mult, col, rows):
 def optimalPolicy(states, actions, grid, goal, wall, policy, col, rows, mult):
 
     nei = neighboors(states, actions, grid, goal, wall, mult, col, rows)
-    print(nei)
+    # print(nei)
 
     dfs_list = {}
     policy_list = {}
