@@ -7,6 +7,7 @@ class MDP:
     def __init__(self, numRows, numCol, wall, goal):
         self.numRows = numRows
         self.numCol = numCol
+        # TODO we should have wall variable as a list to contain more that  one wall (demands many changes)
         self.wall = wall
         self.goal = goal
         self.numActions = []  # this variable tell us how many actions i have from a state
@@ -14,6 +15,7 @@ class MDP:
         self.actions = [0, 1, 2, 3, 4, 5, 6, 7, 8]  # lets make four actions right-0, left-1, up-2, down-3, upRight-4, upLeft-5, downRight-6, downLeft-7, do-noth-8
         self.states = []  # grid and states are one-by-one lists, to know which state
         self.grid = []
+        # TODO get a better way to store transition and reward tables
         self.transition = np.zeros((numRows * numCol, len(self.actions),
                                     numRows * numCol))  # transition and reward tables are n x k x n dimensions
         self.reward = np.zeros((numRows * numCol, len(self.actions),
