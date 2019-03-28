@@ -95,7 +95,7 @@ def GenEpisode(policy, numC, reward, wall, grid, nStates, nActions):
 
             if prob <= cnt:
                 # state - action - reward
-                ep.append((s, a, reward[s, a, nStates[s][j]]))
+                ep.append((s, a, reward[s][a][nStates[s][j]]))
                 ss = nStates[s][j]
                 s = ss
                 break

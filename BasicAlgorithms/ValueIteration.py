@@ -29,7 +29,7 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
 
                 v_a = 0
                 s1 = nStates[s][cnt]
-                v_a += transition[s, a, s1] * (reward[s, a, s1] + gamma * Value[s1])
+                v_a += transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
 
                 if v_a > v_best:
                     policy[s] = a

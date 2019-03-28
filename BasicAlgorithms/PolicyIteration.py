@@ -28,7 +28,8 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
 
             V = 0
             for s1 in nStates[s]:  # for loop for the next state
-                V += transition[s, policy[s], s1] * (reward[s, policy[s], s1] + gamma * Value[s1])
+                if (s1 in transition[s][policy[s]]) and (s1 in reward[s][policy[s]]):
+                    V += transition[s][policy[s]][s1] * (reward[s][policy[s]][s1] + gamma * Value[s1])
                 # reward[s, policy[s], s1] + gamma * Value[s1] * transition[s, policy[s], s1]
                 # reward[s, policy[s], s1] + gamma * Value[s1] * transition[s, policy[s], s1]
 
@@ -44,7 +45,7 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
             cnt = 0
             for a in nActions[s]:  # maximize over actions
                 s1 = nStates[s][cnt]
-                q_sa = transition[s, a, s1] * (reward[s, a, s1] + gamma * Value[s1])
+                q_sa = transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
                 if q_sa > q_best:
                     policy[s] = a
                     q_best = q_sa

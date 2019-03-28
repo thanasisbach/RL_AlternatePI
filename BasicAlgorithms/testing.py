@@ -11,14 +11,15 @@ from sklearn.decomposition import PCA
 
 
 def runMC():
-    nRows = 3
-    nCols = 3
+    nRows = 15
+    nCols = 15
     w = nRows * nCols
     wallP = 1 * w + 2
     goalP = 2 * w + 2
 
     mdp = m.MDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
+    mdp.TnR()
     mdp.InitRnT()
 
     v, p = mc.FirstVisitMC(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
@@ -39,6 +40,7 @@ def runVI():
 
     mdp = m.MDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
+    mdp.TnR()
     mdp.InitRnT()
 
     v, p = vi.ValueIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
@@ -51,14 +53,15 @@ def runVI():
 
 
 def runPI():
-    nRows = 3
-    nCols = 3
+    nRows = 250
+    nCols = 250
     w = nRows * nCols
-    wallP = 1 * w + 2
-    goalP = 2 * w + 2
+    wallP = 23 * w - 24
+    goalP = 12 * w + 12
 
     mdp = m.MDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
+    mdp.TnR()
     mdp.InitRnT()
 
     v, p = pi.PolicyIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
@@ -71,14 +74,15 @@ def runPI():
 
 
 def runAltPI():
-    nRows = 3
-    nCols = 3
+    nRows = 30
+    nCols = 30
     w = nRows * nCols
     wallP = 1 * w + 2
     goalP = 2 * w + 2
 
     mdp = am.AltMDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
+    mdp.TnR()
     mdp.InitRnT()
 
     p, v = api.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA, mdp.actionsB, mdp.grid,
@@ -90,7 +94,7 @@ def main():
     runPI()
     # runVI()
     # runMC()
-    runAltPI()
+    # runAltPI()
 
 
 if __name__ == "__main__":

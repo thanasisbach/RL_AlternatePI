@@ -76,7 +76,9 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
             s = gridStates[sR * mult + sC]
             V = 0
             for s1 in nStates[s]:  # for loop for the next state
-                V += transition[s, policy[s], s1] * (reward[s, policy[s], s1] + gamma * Value[s1])
+                print(s, policy[s], s1)
+                if (s1 in transition[s][policy[s]]) and (s1 in reward[s][policy[s]]):
+                    V += transition[s][policy[s]][s1] * (reward[s][policy[s]][s1] + gamma * Value[s1])
 
             Value[s] = V
 
@@ -93,18 +95,25 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 aC = polC[sC]
 
                 a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions, nStates, transition, reward, Value, gamma)
-                exIt += et
+                # exIt += et
                 pp = [a]
                 arr, acc = DecombinePolicy(pp)
                 if arr != aR:
                     continue
                     aR = arr
 
+                if policy[s] != a:
+                    exIt += et
+
                 if a is None:
+                    print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
                     continue
 
                 s1 = NextState(s, a, len(stateC))
-                q_sa = transition[s, a, s1] * (reward[s, a, s1] + gamma * Value[s1])
+                # print(s, a, s1)
+                # print(transition[s][a][s1])
+                # print(reward[s][a][s1])
+                q_sa = transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
                 if q_sa > q_best:
                     polR[sR] = aR
                     policy[s] = a
@@ -127,7 +136,8 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
             s = gridStates[sR * mult + sC]
             V = 0
             for s1 in nStates[s]:  # for loop for the next state
-                V += transition[s, policy[s], s1] * (reward[s, policy[s], s1] + gamma * Value[s1])
+                if (s1 in transition[s][policy[s]]) and (s1 in reward[s][policy[s]]):
+                    V += transition[s][policy[s]][s1] * (reward[s][policy[s]][s1] + gamma * Value[s1])
 
             Value[s] = V
 
@@ -144,18 +154,25 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 aR = polR[sR]
 
                 a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions, nStates, transition, reward, Value, gamma)
-                exIt += et
+                # exIt += et
                 pp = [a]
                 arr, acc = DecombinePolicy(pp)
                 if acc != aC:
                     continue
                     aC = acc
 
+                if policy[s] != a:
+                    exIt += et
+
                 if a is None:
+                    print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
                     continue
 
                 s1 = NextState(s, a, len(stateC))
-                q_sa = transition[s, a, s1] * (reward[s, a, s1] + gamma * Value[s1])
+                # print(s, a, s1)
+                # print(transition[s][a][s1])
+                # print(reward[s][a][s1])
+                q_sa = transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
                 if q_sa > q_best:
                     polC[sC] = aC
                     policy[s] = a
@@ -377,18 +394,6 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
     else:  # do nothing
         a = aC  # whatever this action is
 
-    # checking if the action is valid in the whole grid
-    # case = True
-    # while case:
-    #     if validAction(gridStates[sR * mult + sC], a, grid, lenR, lenC, wall, mult):
-    #         return a
-    #         # case = False
-    #         # print("nice", act[len(act) - 1])
-    #
-    #     else:
-    #         # get a random action from the possible actions of the state
-    #         # act[len(act) - 1] = random.choice(nActions[gridStates[cntR * mult + cntC]])
-    #         return random.choice(nActions[gridStates[sR * mult + sC]])
 
     if validAction(gridStates[sR * mult + sC], a, grid, lenR, lenC, wall, mult):
         return a, 0
@@ -398,6 +403,7 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
         # return None
         # print(Value)
         s = gridStates[sR * mult + sC]
+        a = random.choice(nActions[gridStates[sR * mult + sC]])
         # print("State:", s, "Action:", a)
         # if value is zero in all next states we cant improve
         val = []
@@ -406,7 +412,7 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
             val.append(Value[s1])
 
         if len(set(val)) <= 1:
-            return random.choice(nActions[gridStates[sR * mult + sC]]), 0
+            return a, 0
 
 
         # policy improvement
@@ -419,7 +425,7 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
             q_best = Value[s]  # we assume that the current value is the best and we improve it
             for aa in nActions[s]:  # maximize over actions
                 s1 = NextState(s, aa, lenC)  # nStates[s][cnt]  #
-                q_sa = transition[s, aa, s1] * (reward[s, aa, s1] + gamma * Value[s1])
+                q_sa = transition[s][aa][s1] * (reward[s][aa][s1] + gamma * Value[s1])
                 if q_sa > q_best:
                     a = aa
                     # policy[s] = a
@@ -507,7 +513,7 @@ def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, tra
                     q_best = Value[s]  # we assume that the current value is the best and we improve it
                     for a in nActions[s]:  # maximize over actions
                         s1 = NextState(s, a, len(pa2))  # nStates[s][cnt]
-                        q_sa = transition[s, a, s1] * (reward[s, a, s1] + gamma * Value[s1])
+                        q_sa = transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
                         # print("q_best", q_best, "q_a", q_sa, "action", a)
                         if q_sa > q_best:
                             act[len(act) - 1] = a
