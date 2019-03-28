@@ -76,7 +76,7 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
             s = gridStates[sR * mult + sC]
             V = 0
             for s1 in nStates[s]:  # for loop for the next state
-                print(s, policy[s], s1)
+                # print(s, policy[s], s1)
                 if (s1 in transition[s][policy[s]]) and (s1 in reward[s][policy[s]]):
                     V += transition[s][policy[s]][s1] * (reward[s][policy[s]][s1] + gamma * Value[s1])
 
@@ -106,7 +106,7 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                     exIt += et
 
                 if a is None:
-                    print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
+                    # print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
                     continue
 
                 s1 = NextState(s, a, len(stateC))
@@ -165,7 +165,7 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                     exIt += et
 
                 if a is None:
-                    print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
+                    # print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
                     continue
 
                 s1 = NextState(s, a, len(stateC))
@@ -451,6 +451,7 @@ def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, tra
 
             if cntR * mult + cntC == wall:
                 act.append(None)
+                cntC += 1
                 continue
 
             if a1 == 2:  # up

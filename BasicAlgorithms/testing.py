@@ -53,11 +53,11 @@ def runVI():
 
 
 def runPI():
-    nRows = 250
-    nCols = 250
+    nRows = 30
+    nCols = 30
     w = nRows * nCols
-    wallP = 23 * w - 24
-    goalP = 12 * w + 12
+    wallP = 28 * w - 29
+    goalP = 29 * w + 29
 
     mdp = m.MDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
@@ -77,8 +77,8 @@ def runAltPI():
     nRows = 30
     nCols = 30
     w = nRows * nCols
-    wallP = 1 * w + 2
-    goalP = 2 * w + 2
+    wallP = 28 * w + 29
+    goalP = 29 * w + 29
 
     mdp = am.AltMDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
@@ -94,7 +94,7 @@ def main():
     runPI()
     # runVI()
     # runMC()
-    # runAltPI()
+    runAltPI()
 
 
 if __name__ == "__main__":
