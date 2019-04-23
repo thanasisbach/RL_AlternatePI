@@ -15,6 +15,7 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
 
     valueChange = True
     iter = 0
+    pi_iter = 0
 
     while valueChange:
         valueChange = False
@@ -23,7 +24,7 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
         # Value iteration part
         for s in states:
 
-            if (grid[s] // mult == wall // mult) and (grid[s] % mult == wall % mult):
+            if grid[s] in wall:
                 continue
 
             V = 0
@@ -38,12 +39,13 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
         # policy evaluation part
         for s in states:
 
-            if (grid[s] // mult == wall // mult) and (grid[s] % mult == wall % mult):
+            if grid[s] in wall:
                 continue
 
             q_best = Value[s]  # we assume that the current value is the best and we improve it
             cnt = 0
             for a in nActions[s]:  # maximize over actions
+                pi_iter += 1
                 s1 = nStates[s][cnt]
                 q_sa = transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
                 if q_sa > q_best:
@@ -53,10 +55,11 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
 
                 cnt += 1
 
-    print(iter)
+    print("Num iters", iter)
+    print("Policy Improvement iters", pi_iter)
     GraphThePolicy(policy, Value, numR, numC)
 
-    return Value, policy
+    return Value, policy, iter
 
 
 def PossibleStates(states, actions, grid, rows, col, wall, mult):
@@ -66,7 +69,7 @@ def PossibleStates(states, actions, grid, rows, col, wall, mult):
 
     for s in states:
 
-        if (grid[s] // mult == wall // mult) and (grid[s] % mult == wall % mult):
+        if grid[s] in wall:
             continue
         nStates[s] = []
         nActions[s] = []
@@ -166,54 +169,104 @@ def validAction(s, a, grid, rows, col, wall, mult):
     # 0-right 1-left 2-up 3-down
     i = grid[s] // mult
     j = grid[s] % mult
+    ww = grid[s]
+    wa = np.array(wall)
 
-    if i == wall // mult and j == wall % mult:
+    if ww in wall:
         return False
 
     if a == 0:  # right
-        if j + 1 > col - 1 or (j + 1 == wall % mult and i == wall // mult):
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i == w // mult:
+                bb = True
+
+        if j + 1 > col - 1 or bb:
             return False
         else:
             return True
 
     elif a == 1:  # left
-        if j - 1 < 0 or (j - 1 == wall % mult and i == wall // mult):
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i == w // mult:
+                bb = True
+
+        if j - 1 < 0 or bb:
             return False
         else:
             return True
 
     elif a == 2:  # up
-        if i - 1 < 0 or (i - 1 == wall // mult and j == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j == w % mult and i - 1 == w // mult:
+                bb = True
+
+        if i - 1 < 0 or bb:
             return False
         else:
             return True
 
     elif a == 3:  # down
-        if i + 1 > rows - 1 or (i + 1 == wall // mult and j == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j == w % mult and i + 1 == w // mult:
+                bb = True
+
+        if i + 1 > rows - 1 or bb:
             return False
         else:
             return True
 
     elif a == 4:  # up-right
-        if (i - 1 < 0 or j + 1 > col - 1) or (i - 1 == wall // mult and j + 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        if (i - 1 < 0 or j + 1 > col - 1) or bb:
             return False
         else:
             return True
 
     elif a == 5:  # up-left
-        if (i - 1 < 0 or j - 1 < 0) or (i - 1 == wall // mult and j - 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        if (i - 1 < 0 or j - 1 < 0) or bb:
             return False
         else:
             return True
 
     elif a == 6:  # down-right
-        if (i + 1 > rows - 1 or j + 1 > col - 1) or (i + 1 == wall // mult and j + 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
             return False
         else:
             return True
 
     elif a == 7:  # down-left
-        if (i + 1 > rows - 1 or j - 1 < 0) or (i + 1 == wall // mult and j - 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        if (i + 1 > rows - 1 or j - 1 < 0) or bb:
             return False
         else:
             return True

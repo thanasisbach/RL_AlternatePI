@@ -56,12 +56,12 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # print("Value function:", Value)
 
     # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma)
-    print(iter)
-    print(extraIter)
+    print("Alt PI iter:", iter)
+    print("Policy Imp:", extraIter)
     print("Row Policy:", polR)
     print("Col Policy:", polC)
-    pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
-    return policy, Value
+    # pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
+    return policy, Value, iter, extraIter
 
 def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma, mult, Value, nRowActions):
 
@@ -70,7 +70,7 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
     # Value iteration part
     for sR in stateR:
         for sC in stateC:
-            if sR * mult + sC == wall:
+            if sR * mult + sC in wall:
                 continue
 
             s = gridStates[sR * mult + sC]
@@ -85,7 +85,7 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
     # policy evaluation part
     for sR in stateR:
         for sC in stateC:
-            if sR * mult + sC == wall:
+            if sR * mult + sC in wall:
                 continue
 
             s = gridStates[sR * mult + sC]
@@ -130,7 +130,7 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
     # Value iteration part
     for sC in stateC:
         for sR in stateR:
-            if sR * mult + sC == wall:
+            if sR * mult + sC in wall:
                 continue
 
             s = gridStates[sR * mult + sC]
@@ -144,7 +144,7 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
     # policy evaluation part
     for sC in stateC:
         for sR in stateR:
-            if sR * mult + sC == wall:
+            if sR * mult + sC in wall:
                 continue
 
             s = gridStates[sR * mult + sC]
@@ -252,7 +252,7 @@ def PossibleStates(states, actions, grid, rows, col, wall, mult):
 
     for s in states:
 
-        if grid[s] == wall:
+        if grid[s] in wall:
             continue
         nStates[s] = []
         nActions[s] = []
@@ -368,7 +368,7 @@ def DecombinePolicy(policy):  # Information aliasing problem was detected here
 def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nActions, nStates, transition, reward, Value, gamma):
     a = None
 
-    if sR * mult + sC == wall:
+    if sR * mult + sC in wall:
         return None
 
     if aR == 2:  # up
@@ -449,7 +449,7 @@ def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, tra
         cntC = 0
         for a2 in pa2:
 
-            if cntR * mult + cntC == wall:
+            if cntR * mult + cntC in wall:
                 act.append(None)
                 cntC += 1
                 continue
@@ -537,54 +537,104 @@ def validAction(s, a, grid, rows, col, wall, mult):
     # 0-right 1-left 2-up 3-down
     i = grid[s] // mult
     j = grid[s] % mult
+    ww = grid[s]
+    wa = np.array(wall)
 
-    if i == wall // mult and j == wall % mult:
+    if ww in wall:
         return False
 
     if a == 0:  # right
-        if j + 1 > col - 1 or (j + 1 == wall % mult and i == wall // mult):
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i == w // mult:
+                bb = True
+
+        if j + 1 > col - 1 or bb:
             return False
         else:
             return True
 
     elif a == 1:  # left
-        if j - 1 < 0 or (j - 1 == wall % mult and i == wall // mult):
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i == w // mult:
+                bb = True
+
+        if j - 1 < 0 or bb:
             return False
         else:
             return True
 
     elif a == 2:  # up
-        if i - 1 < 0 or (i - 1 == wall // mult and j == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j == w % mult and i - 1 == w // mult:
+                bb = True
+
+        if i - 1 < 0 or bb:
             return False
         else:
             return True
 
     elif a == 3:  # down
-        if i + 1 > rows - 1 or (i + 1 == wall // mult and j == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j == w % mult and i + 1 == w // mult:
+                bb = True
+
+        if i + 1 > rows - 1 or bb:
             return False
         else:
             return True
 
     elif a == 4:  # up-right
-        if (i - 1 < 0 or j + 1 > col - 1) or (i - 1 == wall // mult and j + 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        if (i - 1 < 0 or j + 1 > col - 1) or bb:
             return False
         else:
             return True
 
     elif a == 5:  # up-left
-        if (i - 1 < 0 or j - 1 < 0) or (i - 1 == wall // mult and j - 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        if (i - 1 < 0 or j - 1 < 0) or bb:
             return False
         else:
             return True
 
     elif a == 6:  # down-right
-        if (i + 1 > rows - 1 or j + 1 > col - 1) or (i + 1 == wall // mult and j + 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
             return False
         else:
             return True
 
     elif a == 7:  # down-left
-        if (i + 1 > rows - 1 or j - 1 < 0) or (i + 1 == wall // mult and j - 1 == wall % mult):
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        if (i + 1 > rows - 1 or j - 1 < 0) or bb:
             return False
         else:
             return True

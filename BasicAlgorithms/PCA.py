@@ -49,8 +49,8 @@ def plotFeatures(dim1, dim2, title, pc1, pc2):
     plt.figure()
     plt.scatter(dim1, dim2)
     plt.title(title)
-    plt.xlabel("Rows")
-    plt.ylabel("Columns")
+    plt.xlabel("Row - Vector")
+    plt.ylabel("Column - Vector")
 
     print("PC1: ", pc1, "PC2: ", pc2)
     plt.plot([0, pc1[0]], [0, pc1[1]])
@@ -58,7 +58,7 @@ def plotFeatures(dim1, dim2, title, pc1, pc2):
 
     plt.gca().legend(("PC1", "PC2"))
 
-    # plt.show()
+    plt.show()
 
 def draw_vector(v0, v1, ax=None):
     ax = ax or plt.gca()
@@ -72,7 +72,7 @@ def procedurePCA(valueMatrix, r, c):
     mm = []
     for i in range(r):
         for j in range(c):
-            mm.append( np.array([M[i, :], M[:, j]]).T )
+            mm.append(np.array([M[i, :], M[:, j]]).T)
 
     # So now we are going to separate the features (rows and columns)
     dimI0 = M[0, :]
@@ -85,7 +85,8 @@ def procedurePCA(valueMatrix, r, c):
 
     # mm = np.array([dimI2, dimJ2]).T
     # mm = np.array(mm).T
-    mm1 = mm[20] - np.mean(mm[20], axis=0)
+    mm1 = mm[c - 5] - np.mean(mm[c - 5], axis=0)
+
     n_samples = len(mm1[:, 0]) + len(mm1[:, 1])
     Cov = np.dot(mm1.T, mm1) / n_samples
 
@@ -95,16 +96,16 @@ def procedurePCA(valueMatrix, r, c):
     print("Covariance: ", Cov, "\nMatrix: ", mm1, np.mean(mm, axis=0))
     print("S Matrix", np.diag(S), "V Matrix", V)
 
-    plotFeatures(mm1[:, 0], mm1[:, 1], "Row 0 - Column 1", V[0, :], V[1, :])
+    plotFeatures(mm1[:, 0], mm1[:, 1], "PCA 50x50 GridWorld", V[0, :], V[1, :])
     # plotFeatures(dimI2, dimJ0, "Row 2 - Column 0")
 
 
-    print(mm[20][:, 0], mm[20][:, 1])
-    pca2 = pca1(n_components=2, whiten=True)
-    pca2.fit(mm[20])
-
-    plotFeatures(mm1[:, 0], mm1[:, 1], "From PCA library", pca2.components_[0, :], pca2.components_[1, :])
-    plt.show()
+    # print(mm[20][:, 0], mm[20][:, 1])
+    # pca2 = pca1(n_components=2, whiten=True)
+    # pca2.fit(mm[20])
+    #
+    # plotFeatures(mm1[:, 0], mm1[:, 1], "From PCA library", pca2.components_[0, :], pca2.components_[1, :])
+    # plt.show()
     #### this is plotting code taken online ####
     # plt.figure()
     # fig, ax = plt.subplots(1, 2, figsize=(16, 6))
@@ -131,8 +132,8 @@ def procedurePCA(valueMatrix, r, c):
     # plt.show()
     ##### it ends here #####
 
-    print("Probably the eig vectors ", pca2.components_, "Covariance: ", pca2.get_covariance())
-    print("This should be the eig values  ", pca2.explained_variance_)
+    # print("Probably the eig vectors ", pca2.components_, "Covariance: ", pca2.get_covariance())
+    # print("This should be the eig values  ", pca2.explained_variance_)
 
 
 

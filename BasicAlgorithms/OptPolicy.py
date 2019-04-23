@@ -37,8 +37,10 @@ def neighboors(states, actions, grid, goal, wall, mult, col, rows):
 
         i = grid[s] // mult
         j = grid[s] % mult
+        ww = grid[s]
 
-        if (i == wall // mult) and (j == wall % mult):
+
+        if ww in wall:
             continue
 
         if (i == goal // mult) and (j == goal % mult):
@@ -87,11 +89,11 @@ def optimalPolicy(states, actions, grid, goal, wall, policy, col, rows, mult):
 
         dfs_list[s] = 0
         policy_list[s] = 0
-
-        if (grid[s] // mult == wall // mult) and (grid[s] % mult == wall % mult):
+        # print(grid[s], wall)
+        if grid[s] in wall:
             continue
 
-        if (grid[s] // mult == goal // mult) and (grid[s] % mult == goal % mult):
+        if grid[s] == goal:
             continue
 
         # Here starts the Deapth First Search for the sortest path in my grid
@@ -109,6 +111,8 @@ def optimalPolicy(states, actions, grid, goal, wall, policy, col, rows, mult):
                 queue = None
                 continue
 
+            # print(nei)
+            # print(vertex)
             for node in nei[vertex]:
                 if node not in seen:
                     seen.add(node)

@@ -42,7 +42,7 @@ class MDP:
 
         for s in self.states:
 
-            if self.grid[s] == self.wall:
+            if self.grid[s] in self.wall:
                 continue
 
             self.transition[s] = {}

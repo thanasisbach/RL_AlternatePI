@@ -20,7 +20,7 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
         valueChange = False
 
         for s in states:
-            if (grid[s] // mult == wall // mult) and (grid[s] % mult == wall % mult):
+            if grid[s] in wall:
                 continue
                 
             v_best = Value[s]  # we assume that the current value is the best and we improve it
@@ -41,7 +41,7 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
 
 
 
-    print(iter)
+    print("Num iters", iter)
 
-    pi.GraphThePolicy(policy, Value, numR, numC)
-    return Value, policy
+    # pi.GraphThePolicy(policy, Value, numR, numC)
+    return Value, policy, iter
