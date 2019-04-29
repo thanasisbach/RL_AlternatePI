@@ -3,8 +3,8 @@ import random
 import PolicyIteration as pi
 
 
-def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, wall, goal, mult, transition, reward, gamma):
-
+def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, wall, goal, mult, transition, reward,
+                gamma):
     nStates, nActions = PossibleStates(states, actions, grid, len(stateR), len(stateC), wall, mult)
 
     nColActions = PossibleColActions(stateC)
@@ -12,12 +12,13 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
 
     polC = initDecompPolicy(stateC, nColActions, goal, mult)
     polR = initDecompPolicy(stateR, nRowActions, goal, mult)
-    # polC = [8, 1, 8]
+    # polC = [0, 1, 1]
     # polR = [3, 2, 2]
 
     Value = np.zeros(len(states))  # this is the value function
     print("Col Policy:", polC, "Row Policy:", polR)
-    policy, it = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma)  # initPolicy(states, nActions)
+    policy, it = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
+                               gamma)  # initPolicy(states, nActions)
 
     print("Global Policy:", policy)
 
@@ -54,6 +55,9 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # print("The combined policy is:")
         # print(policy)
         # print("Value function:", Value)
+        # print(iter)
+        if iter > ( len(stateC) * len(stateR) ):
+            changeValue = False
 
     # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma)
     print("Alt PI iter:", iter)
@@ -63,8 +67,9 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
     # pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
     return policy, Value, iter, extraIter
 
-def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma, mult, Value, nRowActions):
 
+def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma,
+          mult, Value, nRowActions):
     changeValue = False
     exIt = 0
     # Value iteration part
@@ -94,7 +99,8 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
             for aR in nRowActions[sR]:  # maximize over actions
                 aC = polC[sC]
 
-                a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions, nStates, transition, reward, Value, gamma)
+                a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions,
+                                   nStates, transition, reward, Value, gamma)
                 # exIt += et
                 pp = [a]
                 arr, acc = DecombinePolicy(pp)
@@ -123,8 +129,8 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
     return polR, Value, changeValue, policy, exIt
 
 
-def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma, mult, Value, nColActions):
-
+def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma,
+          mult, Value, nColActions):
     changeValue = False
     exIt = 0
     # Value iteration part
@@ -153,7 +159,8 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
             for aC in nColActions[sC]:  # maximize over actions
                 aR = polR[sR]
 
-                a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions, nStates, transition, reward, Value, gamma)
+                a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions,
+                                   nStates, transition, reward, Value, gamma)
                 # exIt += et
                 pp = [a]
                 arr, acc = DecombinePolicy(pp)
@@ -179,13 +186,10 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                     q_best = q_sa
                     changeValue = True
 
-
     return polC, Value, changeValue, policy, exIt
 
 
 def PossibleColActions(states):
-
-
     nActions = {}
 
     for s in states:
@@ -200,7 +204,6 @@ def PossibleColActions(states):
 
 
 def PossibleRowActions(states):
-
     nActions = {}
 
     for s in states:
@@ -216,7 +219,6 @@ def PossibleRowActions(states):
 
 
 def NextState(s, a, col):
-
     if a == 0:  # right
         return s + 1
 
@@ -246,7 +248,6 @@ def NextState(s, a, col):
 
 
 def PossibleStates(states, actions, grid, rows, col, wall, mult):
-
     nStates = {}
     nActions = {}
 
@@ -299,7 +300,6 @@ def PossibleStates(states, actions, grid, rows, col, wall, mult):
 
 
 def initDecompPolicy(states, nActions, goal, mult):
-
     policy = []
     for s in states:
         if s == goal % mult:
@@ -307,18 +307,16 @@ def initDecompPolicy(states, nActions, goal, mult):
         else:
             policy.append(random.choice(nActions[s]))
 
-
     return policy
 
 
 def initPolicy(states, posActs):
-
     policy = [None for s in states]
 
     for s in states:
         if s in posActs:
             r = random.randint(1, len(posActs[s]))
-            policy[s] = posActs[s][r-1]
+            policy[s] = posActs[s][r - 1]
 
     return policy
 
@@ -365,7 +363,8 @@ def DecombinePolicy(policy):  # Information aliasing problem was detected here
     return aR, aC
 
 
-def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nActions, nStates, transition, reward, Value, gamma):
+def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nActions, nStates, transition, reward, Value,
+               gamma):
     a = None
 
     if sR * mult + sC in wall:
@@ -394,7 +393,6 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
     else:  # do nothing
         a = aC  # whatever this action is
 
-
     if validAction(gridStates[sR * mult + sC], a, grid, lenR, lenC, wall, mult):
         return a, 0
         # print("nice", act[len(act) - 1])
@@ -413,7 +411,6 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
 
         if len(set(val)) <= 1:
             return a, 0
-
 
         # policy improvement
         case = True
@@ -438,7 +435,8 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
     # return a
 
 
-def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma):  # columns action - rows action
+def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
+                  gamma):  # columns action - rows action
 
     act = []
     ct = 0
@@ -510,7 +508,6 @@ def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, tra
                     # instead of random action this helps value function convergence
                     # policy improvement part
 
-
                     q_best = Value[s]  # we assume that the current value is the best and we improve it
                     for a in nActions[s]:  # maximize over actions
                         s1 = NextState(s, a, len(pa2))  # nStates[s][cnt]
@@ -526,7 +523,6 @@ def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, tra
                 # print(act[len(act) - 1])
 
             cntC += 1
-
 
         cntR += 1
 
@@ -595,7 +591,15 @@ def validAction(s, a, grid, rows, col, wall, mult):
 
         bb = False
         for w in wall:
+
             if j + 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+                bb = False
+            else:
                 bb = True
 
         if (i - 1 < 0 or j + 1 > col - 1) or bb:
@@ -610,6 +614,13 @@ def validAction(s, a, grid, rows, col, wall, mult):
             if j - 1 == w % mult and i - 1 == w // mult:
                 bb = True
 
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
         if (i - 1 < 0 or j - 1 < 0) or bb:
             return False
         else:
@@ -622,6 +633,13 @@ def validAction(s, a, grid, rows, col, wall, mult):
             if j + 1 == w % mult and i + 1 == w // mult:
                 bb = True
 
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
         if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
             return False
         else:
@@ -632,6 +650,13 @@ def validAction(s, a, grid, rows, col, wall, mult):
         bb = False
         for w in wall:
             if j - 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+                bb = False
+            else:
                 bb = True
 
         if (i + 1 > rows - 1 or j - 1 < 0) or bb:

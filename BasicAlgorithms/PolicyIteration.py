@@ -1,6 +1,6 @@
 import numpy as np
 import random
-
+from PIL import Image
 
 # This is the classic policy iteration algorithm
 def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid, wall, goal, mult):
@@ -55,9 +55,11 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
 
                 cnt += 1
 
+
+
     print("Num iters", iter)
     print("Policy Improvement iters", pi_iter)
-    GraphThePolicy(policy, Value, numR, numC)
+    # GraphThePolicy(policy, Value, numR, numC)
 
     return Value, policy, iter
 
@@ -152,6 +154,17 @@ def GraphThePolicy(policy, value, row, col):
         act = ""
         val = ""
 
+    # policy = np.matrix(policy)
+    # imgx = 512
+    # imgy = 512
+    # image = Image.new("RGB", (imgx, imgy))
+    # pixels = image.load()
+    # for ky in range(imgy):
+    #     for kx in range(imgx):
+    #         m = policy[row * ky // imgy][col * kx // imgx] * 255
+    #         pixels[kx, ky] = (m, m, m)
+    # image.save("RandomMaze_" + str(row) + "x" + str(col) + ".png", "PNG")
+
 
 def initPolicy(states, posActs):
 
@@ -163,7 +176,144 @@ def initPolicy(states, posActs):
             policy[s] = posActs[s][r-1]
 
     return policy
+def validAction(s, a, grid, rows, col, wall, mult):
+    # 0-right 1-left 2-up 3-down
+    i = grid[s] // mult
+    j = grid[s] % mult
+    ww = grid[s]
+    wa = np.array(wall)
 
+    if ww in wall:
+        return False
+
+    if a == 0:  # right
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i == w // mult:
+                bb = True
+
+        if j + 1 > col - 1 or bb:
+            return False
+        else:
+            return True
+
+    elif a == 1:  # left
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i == w // mult:
+                bb = True
+
+        if j - 1 < 0 or bb:
+            return False
+        else:
+            return True
+
+    elif a == 2:  # up
+
+        bb = False
+        for w in wall:
+            if j == w % mult and i - 1 == w // mult:
+                bb = True
+
+        if i - 1 < 0 or bb:
+            return False
+        else:
+            return True
+
+    elif a == 3:  # down
+
+        bb = False
+        for w in wall:
+            if j == w % mult and i + 1 == w // mult:
+                bb = True
+
+        if i + 1 > rows - 1 or bb:
+            return False
+        else:
+            return True
+
+    elif a == 4:  # up-right
+
+        bb = False
+        for w in wall:
+
+            if j + 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
+        if (i - 1 < 0 or j + 1 > col - 1) or bb:
+            return False
+        else:
+            return True
+
+    elif a == 5:  # up-left
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
+        if (i - 1 < 0 or j - 1 < 0) or bb:
+            return False
+        else:
+            return True
+
+    elif a == 6:  # down-right
+
+        bb = False
+        for w in wall:
+            if j + 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
+        if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
+            return False
+        else:
+            return True
+
+    elif a == 7:  # down-left
+
+        bb = False
+        for w in wall:
+            if j - 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
+
+        if (i + 1 > rows - 1 or j - 1 < 0) or bb:
+            return False
+        else:
+            return True
+
+    else:  # do nothing
+        return True
 
 def validAction(s, a, grid, rows, col, wall, mult):
     # 0-right 1-left 2-up 3-down
@@ -227,7 +377,15 @@ def validAction(s, a, grid, rows, col, wall, mult):
 
         bb = False
         for w in wall:
+
             if j + 1 == w % mult and i - 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+                bb = False
+            else:
                 bb = True
 
         if (i - 1 < 0 or j + 1 > col - 1) or bb:
@@ -242,6 +400,13 @@ def validAction(s, a, grid, rows, col, wall, mult):
             if j - 1 == w % mult and i - 1 == w // mult:
                 bb = True
 
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
         if (i - 1 < 0 or j - 1 < 0) or bb:
             return False
         else:
@@ -252,6 +417,13 @@ def validAction(s, a, grid, rows, col, wall, mult):
         bb = False
         for w in wall:
             if j + 1 == w % mult and i + 1 == w // mult:
+                bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+                bb = False
+            else:
                 bb = True
 
         if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
@@ -265,6 +437,14 @@ def validAction(s, a, grid, rows, col, wall, mult):
         for w in wall:
             if j - 1 == w % mult and i + 1 == w // mult:
                 bb = True
+
+        # new part for valid actions
+        if not bb:
+            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+                bb = False
+            else:
+                bb = True
+
 
         if (i + 1 > rows - 1 or j - 1 < 0) or bb:
             return False

@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from scipy import optimize
 import random
 import math
+import MazeGenerator.py as mg
 
 
 def runAltPI(nRows, nCols, wallP, goalP):

@@ -1,6 +1,7 @@
 import collections
 import PolicyIteration as pi
 
+
 def nextState(s, a, col):
     if a == 0:  # right
         return s + 1
@@ -29,6 +30,7 @@ def nextState(s, a, col):
     else:  # do-nothing action
         return s
 
+
 def neighboors(states, actions, grid, goal, wall, mult, col, rows):
     # 0-right 1-left 2-up 3-down
     neig = {}
@@ -38,7 +40,6 @@ def neighboors(states, actions, grid, goal, wall, mult, col, rows):
         i = grid[s] // mult
         j = grid[s] % mult
         ww = grid[s]
-
 
         if ww in wall:
             continue
@@ -76,9 +77,7 @@ def neighboors(states, actions, grid, goal, wall, mult, col, rows):
     return neig
 
 
-
 def optimalPolicy(states, actions, grid, goal, wall, policy, col, rows, mult):
-
     nei = neighboors(states, actions, grid, goal, wall, mult, col, rows)
     # print(nei)
 
@@ -138,7 +137,7 @@ def optimalPolicy(states, actions, grid, goal, wall, policy, col, rows, mult):
                 print(policy[cur_state], grid[cur_state])
                 gg = False
 
-            if cnt > len(states)*len(states):
+            if cnt > len(states) * len(states):
                 print("Too many moves in the grid to find the goal state")
                 gg = False
 
@@ -148,6 +147,9 @@ def optimalPolicy(states, actions, grid, goal, wall, policy, col, rows, mult):
         if dfs_list[state] != policy_list[state]:
             cc = 0
             print("not optimal path from state:", state)
+            print("with policy: ", policy[state])
+            print("number of steps from policy: ", policy_list[state])
+            print("number of steps from dfs: ", dfs_list[state])
 
     if cc:
         print("Optimal Policy!!!")

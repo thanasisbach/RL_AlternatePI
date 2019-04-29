@@ -7,6 +7,7 @@ import MDP as m
 import AltMDP as am
 import PCA as pca
 import OptPolicy as op
+import MazeGenerator as mg
 from sklearn.decomposition import PCA
 
 
@@ -52,12 +53,14 @@ def runVI():
     # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
 
 
-def runPI():
-    nRows = 3
-    nCols = 3
+def runPI(rows, cols, goal, wall):
+    nRows = rows
+    nCols = cols
     w = nRows * nCols
-    wallP = [(nRows - 2) * w + (nCols - 1)]
-    goalP = (nRows - 1) * w + (nCols - 1)
+    # wallP = [(nRows - 2) * w + (nCols - 1), 0 * w + 2]
+    # goalP = (nRows - 1) * w + (nCols - 1)
+
+    goalP, wallP = goal, wall # mg.MazeGrid(nRows, nCols)
 
     mdp = m.MDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
@@ -73,12 +76,14 @@ def runPI():
     op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
 
 
-def runAltPI():
-    nRows = 3
-    nCols = 3
+def runAltPI(rows, cols, goal, wall):
+    nRows = rows
+    nCols = cols
     w = nRows * nCols
-    wallP = [1 * w + 2]
-    goalP = 2 * w + 2
+    # wallP = [1 * w + 2, 0 * w, 2]
+    # goalP = 2 * w + 2
+
+    goalP, wallP = goal, wall # mg.MazeGrid(nRows, nCols)
 
     mdp = am.AltMDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
@@ -91,10 +96,16 @@ def runAltPI():
     op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
 
 def main():
-    runPI()
+    rows = 3
+    cols = 3
+    goal = 2 * 9 + 2
+    wall = [0 * 9 - 1]
+    # goal, wall = mg.MazeGrid(rows, cols)
+
+    runPI(rows, cols, goal, wall)
     # runVI()
     # runMC()
-    runAltPI()
+    runAltPI(rows, cols, goal, wall)
 
 
 if __name__ == "__main__":
