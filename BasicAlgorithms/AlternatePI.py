@@ -47,7 +47,11 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
         # gamma)
 
+        # print("col: ", polC)
+        # print("row: ", polR)
+        # print("glob", policy)
         if cValueR or cValueC:
+            # print(iter, cValueC, cValueR)
             changeValue = True
 
         # print("Individual policies are:")
@@ -56,7 +60,7 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # print(policy)
         # print("Value function:", Value)
         # print(iter)
-        if iter > ( len(stateC) * len(stateR) ):
+        if iter > ( len(stateC) * len(stateR) * len(stateC)):
             changeValue = False
 
     # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma)
@@ -70,6 +74,7 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
 
 def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma,
           mult, Value, nRowActions):
+
     changeValue = False
     exIt = 0
     # Value iteration part
@@ -106,7 +111,7 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 arr, acc = DecombinePolicy(pp)
                 if arr != aR:
                     continue
-                    aR = arr
+                    # aR = arr
 
                 if policy[s] != a:
                     exIt += et
@@ -123,7 +128,9 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 if q_sa > q_best:
                     polR[sR] = aR
                     policy[s] = a
+                    # print(q_sa, q_best)
                     q_best = q_sa
+                    # print(policy[s])
                     changeValue = True
 
     return polR, Value, changeValue, policy, exIt
@@ -131,6 +138,7 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
 
 def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma,
           mult, Value, nColActions):
+
     changeValue = False
     exIt = 0
     # Value iteration part
@@ -166,7 +174,7 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 arr, acc = DecombinePolicy(pp)
                 if acc != aC:
                     continue
-                    aC = acc
+                    # aC = acc
 
                 if policy[s] != a:
                     exIt += et
@@ -183,6 +191,7 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 if q_sa > q_best:
                     polC[sC] = aC
                     policy[s] = a
+                    # print(q_sa, q_best, " column")
                     q_best = q_sa
                     changeValue = True
 

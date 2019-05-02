@@ -96,13 +96,13 @@ def runAltPI(rows, cols, goal, wall):
     op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
 
 def main():
-    rows = 3
-    cols = 3
-    goal = 2 * 9 + 2
-    wall = [0 * 9 - 1]
-    # goal, wall = mg.MazeGrid(rows, cols)
+    rows = 60
+    cols = 60
+    # goal = 2 * 9 + 2
+    # wall = [0 * 9 + 1]
+    goal, wall = mg.MazeGrid(rows, cols)
 
-    runPI(rows, cols, goal, wall)
+    # runPI(rows, cols, goal, wall)
     # runVI()
     # runMC()
     runAltPI(rows, cols, goal, wall)

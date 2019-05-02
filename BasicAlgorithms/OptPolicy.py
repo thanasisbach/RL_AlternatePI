@@ -146,8 +146,9 @@ def optimalPolicy(states, actions, grid, goal, wall, policy, col, rows, mult):
     for state in dfs_list:
         if dfs_list[state] != policy_list[state]:
             cc = 0
+            moves = ["right", "left", "up", "down", "up-right", "up-left", "down-right", "down-left", "do-nothing"]
             print("not optimal path from state:", state)
-            print("with policy: ", policy[state])
+            print("with policy: ", moves[policy[state]])
             print("number of steps from policy: ", policy_list[state])
             print("number of steps from dfs: ", dfs_list[state])
 
