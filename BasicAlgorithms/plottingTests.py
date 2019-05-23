@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from scipy import optimize
 import random
 import math
-import MazeGenerator.py as mg
+import MazeGenerator as mg
 
 
 def runAltPI(nRows, nCols, wallP, goalP):
@@ -122,7 +122,7 @@ def different_square_with_worst_case(size):
         size_inner = size[i]
         multiple = size_inner
         goal = (size[i] - 1) * (size[i] * size[i]) + (size[i] - 1)
-        wall = (size[i] - 2) * (size[i] * size[i]) + (size[i] - 1)
+        wall = [ (size[i] - 2) * (size[i] * size[i]) - (size[i] - 1) ]
 
         p1 = runAltPI(size_inner, size_inner, wall, goal)
         run_alt_pi.append(p1)
@@ -174,7 +174,13 @@ def plot_test(size, alt_pi, pi, vi):
 
 
 def main():
-    size = [1000]  # [3, 5, 10, 100, 250, 500, 750, 1000, 5000]
+
+    size = [3, 6]
+    for i in range(10, 760, 20):
+        size.append(i)
+        # i += 20
+
+    # size = [3, 5, 10] # , 250, 500, 750, 1000, 5000]
     different_square_with_worst_case(size)
 
 

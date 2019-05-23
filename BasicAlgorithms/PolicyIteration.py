@@ -11,7 +11,7 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
     policy = initPolicy(states, nActions)  # [0 for s in states]
 
     Value = np.zeros(len(states))  # this is the value function
-    print("Initial policy", policy)
+    # print("Initial policy", policy)
 
     valueChange = True
     iter = 0
@@ -43,17 +43,20 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
                 continue
 
             q_best = Value[s]  # we assume that the current value is the best and we improve it
-            cnt = 0
+
+            #print(q_best, "optimal")
             for a in nActions[s]:  # maximize over actions
                 pi_iter += 1
-                s1 = nStates[s][cnt]
-                q_sa = transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
+                # s1 = nStates[s][cnt]
+                q_sa = 0
+                for s1 in nStates[s]:
+                    q_sa += transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
+
+
                 if q_sa > q_best:
                     policy[s] = a
                     q_best = q_sa
                     valueChange = True
-
-                cnt += 1
 
 
 
@@ -64,7 +67,51 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
     return Value, policy, iter
 
 
+
+def AroundStates(states, actions, grid, rows, col, wall, mult):
+    # this method find the around states of the current state
+    ArStates = {}
+
+    for s in states:
+        ArStates[s] = []
+
+        for a in actions:
+
+            if validAction(s, a, grid, rows, col, wall, mult):
+
+                if a == 0:  # right
+                    ArStates[s].append(s + 1)
+
+                elif a == 1:  # left
+                    ArStates[s].append(s - 1)
+
+                elif a == 2:  # up
+                    ArStates[s].append(s - col)
+
+                elif a == 3:  # down
+                    ArStates[s].append(s + col)
+
+                elif a == 4:  # up-right
+                    ArStates[s].append(s - col + 1)
+
+                elif a == 5:  # up-left
+                    ArStates[s].append(s - col - 1)
+
+                elif a == 6:  # down-right
+                    ArStates[s].append(s + col + 1)
+
+                elif a == 7:  # down-left
+                    ArStates[s].append(s + col - 1)
+
+                else:  # do nothing
+                    ArStates[s].append(s)
+
+    return ArStates
+
+
 def PossibleStates(states, actions, grid, rows, col, wall, mult):
+
+    arStates = AroundStates(states, actions, grid, rows, col, wall, mult)
 
     nStates = {}
     nActions = {}
@@ -78,39 +125,39 @@ def PossibleStates(states, actions, grid, rows, col, wall, mult):
         for a in actions:
             if validAction(s, a, grid, rows, col, wall, mult):
                 if a == 0:  # right
-                    nStates[s].append(s + 1)
+                    nStates[s] = arStates  # .append(s + 1)
                     nActions[s].append(a)
 
                 elif a == 1:  # left
-                    nStates[s].append(s - 1)
+                    nStates[s] = arStates[s]  # .append(s - 1)
                     nActions[s].append(a)
 
                 elif a == 2:  # up
-                    nStates[s].append(s - col)
+                    nStates[s] = arStates[s]  # .append(s - col)
                     nActions[s].append(a)
 
                 elif a == 3:  # down
-                    nStates[s].append(s + col)
+                    nStates[s] = arStates[s]  # .append(s + col)
                     nActions[s].append(a)
 
                 elif a == 4:  # up-right
-                    nStates[s].append(s - col + 1)
+                    nStates[s] = arStates[s]  # .append(s - col + 1)
                     nActions[s].append(a)
 
                 elif a == 5:  # up-left
-                    nStates[s].append(s - col - 1)
+                    nStates[s] = arStates[s]  # .append(s - col - 1)
                     nActions[s].append(a)
 
                 elif a == 6:  # down-right
-                    nStates[s].append(s + col + 1)
+                    nStates[s] = arStates[s]  # .append(s + col + 1)
                     nActions[s].append(a)
 
                 elif a == 7:  # down-left
-                    nStates[s].append(s + col - 1)
+                    nStates[s] = arStates[s]  # .append(s + col - 1)
                     nActions[s].append(a)
 
                 else:  # do-nothing action
-                    nStates[s].append(s)
+                    nStates[s] = arStates[s]  # .append(s)
                     nActions[s].append(a)
 
     return nStates, nActions
@@ -176,6 +223,8 @@ def initPolicy(states, posActs):
             policy[s] = posActs[s][r-1]
 
     return policy
+
+
 def validAction(s, a, grid, rows, col, wall, mult):
     # 0-right 1-left 2-up 3-down
     i = grid[s] // mult
@@ -315,141 +364,3 @@ def validAction(s, a, grid, rows, col, wall, mult):
     else:  # do nothing
         return True
 
-def validAction(s, a, grid, rows, col, wall, mult):
-    # 0-right 1-left 2-up 3-down
-    i = grid[s] // mult
-    j = grid[s] % mult
-    ww = grid[s]
-    wa = np.array(wall)
-
-    if ww in wall:
-        return False
-
-    if a == 0:  # right
-
-        bb = False
-        for w in wall:
-            if j + 1 == w % mult and i == w // mult:
-                bb = True
-
-        if j + 1 > col - 1 or bb:
-            return False
-        else:
-            return True
-
-    elif a == 1:  # left
-
-        bb = False
-        for w in wall:
-            if j - 1 == w % mult and i == w // mult:
-                bb = True
-
-        if j - 1 < 0 or bb:
-            return False
-        else:
-            return True
-
-    elif a == 2:  # up
-
-        bb = False
-        for w in wall:
-            if j == w % mult and i - 1 == w // mult:
-                bb = True
-
-        if i - 1 < 0 or bb:
-            return False
-        else:
-            return True
-
-    elif a == 3:  # down
-
-        bb = False
-        for w in wall:
-            if j == w % mult and i + 1 == w // mult:
-                bb = True
-
-        if i + 1 > rows - 1 or bb:
-            return False
-        else:
-            return True
-
-    elif a == 4:  # up-right
-
-        bb = False
-        for w in wall:
-
-            if j + 1 == w % mult and i - 1 == w // mult:
-                bb = True
-
-        # new part for valid actions
-        if not bb:
-            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
-
-        if (i - 1 < 0 or j + 1 > col - 1) or bb:
-            return False
-        else:
-            return True
-
-    elif a == 5:  # up-left
-
-        bb = False
-        for w in wall:
-            if j - 1 == w % mult and i - 1 == w // mult:
-                bb = True
-
-        # new part for valid actions
-        if not bb:
-            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
-
-        if (i - 1 < 0 or j - 1 < 0) or bb:
-            return False
-        else:
-            return True
-
-    elif a == 6:  # down-right
-
-        bb = False
-        for w in wall:
-            if j + 1 == w % mult and i + 1 == w // mult:
-                bb = True
-
-        # new part for valid actions
-        if not bb:
-            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
-
-        if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
-            return False
-        else:
-            return True
-
-    elif a == 7:  # down-left
-
-        bb = False
-        for w in wall:
-            if j - 1 == w % mult and i + 1 == w // mult:
-                bb = True
-
-        # new part for valid actions
-        if not bb:
-            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
-
-
-        if (i + 1 > rows - 1 or j - 1 < 0) or bb:
-            return False
-        else:
-            return True
-
-    else:  # do nothing
-        return True

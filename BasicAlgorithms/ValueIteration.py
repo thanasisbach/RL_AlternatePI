@@ -11,7 +11,7 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
     policy = pi.initPolicy(states, nActions) # [0 for s in states]  # [0, 3, 1, 0, 3, 0, 0, 0, 1]  #
 
     Value = np.zeros(len(states))  # this is the value function
-    print("Initial policy", policy)
+    # print("Initial policy", policy)
 
     valueChange = True
     iter = 0
@@ -24,19 +24,20 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
                 continue
                 
             v_best = Value[s]  # we assume that the current value is the best and we improve it
-            cnt = 0
+            # cnt = 0
             for a in nActions[s]:
 
                 v_a = 0
-                s1 = nStates[s][cnt]
-                v_a += transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
+                # s1 = nStates[s][cnt]
+                for s1 in nStates[s]:
+                    v_a += transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
 
                 if v_a > v_best:
                     policy[s] = a
                     v_best = v_a
                     valueChange = True
 
-                cnt += 1
+                # cnt += 1
             Value[s] = v_best
 
 

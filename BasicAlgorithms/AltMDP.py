@@ -28,6 +28,7 @@ class AltMDP:
         #                        numRows * numCol))  # where n is the state space and k is the action space
         self.gamma = 0.9  # in range (0,1)
         self.mult = numRows * numCol
+        self.prob = 0.8
 
     def CreateGrid(self):
 
@@ -48,6 +49,7 @@ class AltMDP:
 
     def TnR(self):
 
+        arStates = pi.AroundStates(self.states, self.actions, self.grid, self.numB, self.numA, self.wall, self.mult)
 
         for s in self.states:
 
@@ -61,39 +63,49 @@ class AltMDP:
                     if a == 0:  # right
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s + 1] = 0
-                        self.reward[s][a][s + 1] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
                         # nActions[s].append(a)
 
                     elif a == 1:  # left
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s - 1] = 0
-                        self.reward[s][a][s - 1] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
                         # nStates[s].append(s - 1)
                         # nActions[s].append(a)
 
                     elif a == 2:  # up
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s - self.numA] = 0
-                        self.reward[s][a][s - self.numA] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
                         # nStates[s].append(s - col)
                         # nActions[s].append(a)
 
                     elif a == 3:  # down
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s + self.numA] = 0
-                        self.reward[s][a][s + self.numA] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
                         # nStates[s].append(s + col)
                         # nActions[s].append(a)
 
                     elif a == 4:  # up-right
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s - self.numA + 1] = 0
-                        self.reward[s][a][s - self.numA + 1] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
 
                         # nStates[s].append(s - col + 1)
                         # nActions[s].append(a)
@@ -101,8 +113,10 @@ class AltMDP:
                     elif a == 5:  # up-left
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s - self.numA - 1] = 0
-                        self.reward[s][a][s - self.numA - 1] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
 
                         # nStates[s].append(s - col - 1)
                         # nActions[s].append(a)
@@ -110,8 +124,10 @@ class AltMDP:
                     elif a == 6:  # down-right
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s + self.numA + 1] = 0
-                        self.reward[s][a][s + self.numA + 1] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
 
                         # nStates[s].append(s + col + 1)
                         # nActions[s].append(a)
@@ -119,8 +135,10 @@ class AltMDP:
                     elif a == 7:  # down-left
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s + self.numA - 1] = 0
-                        self.reward[s][a][s + self.numA - 1] = 0
+
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
 
                         # nStates[s].append(s + col - 1)
                         # nActions[s].append(a)
@@ -128,11 +146,10 @@ class AltMDP:
                     else:  # do-nothing action
                         self.transition[s][a] = {}
                         self.reward[s][a] = {}
-                        self.transition[s][a][s] = 0
-                        self.reward[s][a][s] = 0
 
-                        # nStates[s].append(s)
-                        # nActions[s].append(a)
+                        for kappa in arStates[s]:
+                            self.transition[s][a][kappa] = 0  # [s + 1] = 0
+                            self.reward[s][a][kappa] = 0  # [s + 1] = 0
 
 
     def InitRnT(self):
@@ -151,54 +168,123 @@ class AltMDP:
                 if pi.validAction(s, a, self.grid, self.numB, self.numA, self.wall, self.mult):
 
                     if a == 0:  # right
-                        self.transition[s][a][s + 1] = 1 / self.numActions[s]
-                        if self.grid[s + 1] // self.mult == self.goal // self.mult and self.grid[s + 1] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s + 1] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s + 1:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
+
 
                     elif a == 1:  # left
-                        self.transition[s][a][s - 1] = 1 / self.numActions[s]
-                        if self.grid[s - 1] // self.mult == self.goal // self.mult and self.grid[s - 1] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s - 1] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s - 1:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
 
                     elif a == 2:  # up
-                        self.transition[s][a][s - self.numA] = 1 / self.numActions[s]
-                        if self.grid[s - self.numA] // self.mult == self.goal // self.mult and self.grid[
-                            s - self.numA] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s - self.numA] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s - self.numA:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
 
                     elif a == 3:  # down
-                        self.transition[s][a][s + self.numA] = 1 / self.numActions[s]
-                        if self.grid[s + self.numA] // self.mult == self.goal // self.mult and self.grid[
-                            s + self.numA] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s + self.numA] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s + self.numA:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
+
+
+
 
                     elif a == 4:  # up-right
-                        self.transition[s][a][s - self.numA + 1] = 1 / self.numActions[s]
-                        if self.grid[s - self.numA + 1] // self.mult == self.goal // self.mult and self.grid[
-                            s - self.numA + 1] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s - self.numA + 1] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s - self.numA + 1:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
 
                     elif a == 5:  # up-left
-                        self.transition[s][a][s - self.numA - 1] = 1 / self.numActions[s]
-                        if self.grid[s - self.numA - 1] // self.mult == self.goal // self.mult and self.grid[
-                            s - self.numA - 1] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s - self.numA - 1] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s - self.numA - 1:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
 
                     elif a == 6:  # down-right
-                        self.transition[s][a][s + self.numA + 1] = 1 / self.numActions[s]
-                        if self.grid[s + self.numA + 1] // self.mult == self.goal // self.mult and self.grid[
-                            s + self.numA + 1] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s + self.numA + 1] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s + self.numA + 1:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
 
                     elif a == 7:  # down-left
-                        self.transition[s][a][s + self.numA - 1] = 1 / self.numActions[s]
-                        if self.grid[s + self.numA - 1] // self.mult == self.goal // self.mult and self.grid[
-                            s + self.numA - 1] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s + self.numA - 1] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s + self.numA - 1:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
 
                     else:  # do-nothing action
-                        self.transition[s][a][s] = 1 / self.numActions[s]
-                        if self.grid[s] // self.mult == self.goal // self.mult and self.grid[
-                            s] % self.mult == self.goal % self.mult:
-                            self.reward[s][a][s] = self.mult
+
+                        for kappa in self.transition[s][a]:
+
+                            if kappa == s:
+                                self.transition[s][a][kappa] = self.prob
+
+                            else:
+                                self.transition[s][a][kappa] = (1 - self.prob) / (self.numActions[s] - 1)
+
+                            if self.grid[kappa] == self.goal:
+                                self.reward[s][a][kappa] = self.mult
             # print(s, self.numActions[s])
