@@ -20,12 +20,12 @@ def runAltPI(nRows, nCols, wallP, goalP):
     mdp.TnR()
     mdp.InitRnT()
 
-    p, v, iter, extraiter = api.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA,
+    p, v, iter, extraiter, time = api.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA,
                                             mdp.actionsB, mdp.grid,
                                             mdp.gridStates, mdp.wall, mdp.goal, mdp.mult, mdp.transition, mdp.reward,
                                             mdp.gamma)
     # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
-    return iter
+    return time
 
 
 def runPI(nRows, nCols, wallP, goalP):
@@ -34,12 +34,12 @@ def runPI(nRows, nCols, wallP, goalP):
     mdp.TnR()
     mdp.InitRnT()
 
-    v, p, iter = pi.PolicyIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows,
+    v, p, iter, time = pi.PolicyIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows,
                                     mdp.numCol,
                                     mdp.grid, mdp.wall, mdp.goal, mdp.mult)
 
     # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
-    return iter
+    return time
 
 
 def runMC(nRows, nCols, wallP, goalP):
@@ -59,12 +59,12 @@ def runVI(nRows, nCols, wallP, goalP):
     mdp.TnR()
     mdp.InitRnT()
 
-    v, p, iter = vi.ValueIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows,
+    v, p, iter, time = vi.ValueIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows,
                                    mdp.numCol,
                                    mdp.grid, mdp.wall, mdp.goal, mdp.mult)
 
     # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
-    return iter
+    return time
 
 
 def mask(max_size, wall_num_portion):
@@ -122,7 +122,8 @@ def different_square_with_worst_case(size):
         size_inner = size[i]
         multiple = size_inner
         goal = (size[i] - 1) * (size[i] * size[i]) + (size[i] - 1)
-        wall = [ (size[i] - 2) * (size[i] * size[i]) - (size[i] - 1) ]
+        wall = [(size[i] - 2) * (size[i] * size[i]) + (size[i] - 1)]
+        goal, wall = mg.MazeGrid(size[i], size[i])
 
         p1 = runAltPI(size_inner, size_inner, wall, goal)
         run_alt_pi.append(p1)
@@ -165,22 +166,22 @@ def plot_test(size, alt_pi, pi, vi):
     # y3 = (A3 * x3 * x3 * x3 * x3) + (B3 * x3 * x3 * x3) + (C3 * x3 * x3) + D3
     # plt.plot(x3, y3, "purple")
 
-    plt.gca().legend(("Alternate PI", "PI", "VI"))
-    plt.title("Convergence")
-    plt.xlabel('DP RL')
-    plt.ylabel('number_of_iteration')
+    plt.gca().legend(("Alternating PI", "PI", "VI"))
+    plt.title("Convergence Rate in Maze")
+    plt.xlabel('Number of Grid size, NxN')
+    plt.ylabel('Time in Seconds')
 
     plt.show()
 
 
 def main():
 
-    size = [3, 6]
-    for i in range(10, 760, 20):
+    size = [3, 6, 10]
+    for i in range(15, 65, 5):  # 571 was the upper bound of iterations
         size.append(i)
         # i += 20
-
     # size = [3, 5, 10] # , 250, 500, 750, 1000, 5000]
+    print(size)
     different_square_with_worst_case(size)
 
 

@@ -1,5 +1,6 @@
 import numpy as np
 import PolicyIteration as pi
+import time
 
 
 # This is the classic policy iteration algorithm
@@ -15,6 +16,7 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
 
     valueChange = True
     iter = 0
+    start_time = time.time()
     while valueChange:
         iter += 1
         valueChange = False
@@ -40,9 +42,9 @@ def ValueIteration(states, actions, reward, transition, gamma, numR, numC, grid,
                 # cnt += 1
             Value[s] = v_best
 
-
-
+    totTime = time.time() - start_time
+    print("Run time in seconds: ", totTime)
     print("Num iters", iter)
 
     # pi.GraphThePolicy(policy, Value, numR, numC)
-    return Value, policy, iter
+    return Value, policy, iter, totTime

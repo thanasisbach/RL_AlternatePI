@@ -32,19 +32,19 @@ def runMC():
     # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
 
 
-def runVI():
-    nRows = 3
-    nCols = 3
+def runVI(nRows, nCols, goalP, wallP):
+    # nRows = 3
+    # nCols = 3
     w = nRows * nCols
-    goalP = 2 * 9 + 2
-    wallP = [1 * 9 + 2]
+    # goalP = 2 * 9 + 2
+    # wallP = [1 * 9 + 2]
 
     mdp = m.MDP(nRows, nRows, wallP, goalP)
     mdp.CreateGrid()
     mdp.TnR()
     mdp.InitRnT()
 
-    v, p, it = vi.ValueIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
+    v, p, it, time = vi.ValueIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
                              mdp.grid, mdp.wall, mdp.goal, mdp.mult)
 
     # well this is the part where we will use pca with the "optimal" Value function that PI returns
@@ -67,13 +67,14 @@ def runPI(rows, cols, goal, wall):
     mdp.TnR()
     mdp.InitRnT()
 
-    v, p, it = pi.PolicyIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
+    v, p, it, time = pi.PolicyIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
                               mdp.grid, mdp.wall, mdp.goal, mdp.mult)
 
     # well this is the part where we will use pca with the "optimal" Value function that PI returns
     # pca.Pca(v, p, mdp.numRows, mdp.numCol)
 
     op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
+    Count(p)
 
 
 def runAltPI(rows, cols, goal, wall):
@@ -90,21 +91,32 @@ def runAltPI(rows, cols, goal, wall):
     mdp.TnR()
     mdp.InitRnT()
 
-    p, v, it, altit = api.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA, mdp.actionsB, mdp.grid,
+    p, v, it, altit, time = api.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA, mdp.actionsB, mdp.grid,
                            mdp.gridStates, mdp.wall, mdp.goal, mdp.mult, mdp.transition, mdp.reward, mdp.gamma)
 
     op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
 
+
+def Count(policy):
+
+    cnt = 0
+    for p in policy:
+        if p is not None:
+            cnt += 1
+
+    print(cnt)
+
+
 def main():
-    rows = 30
-    cols = 30
+    rows = 40
+    cols = 40
     w = rows * cols
     goal = (rows - 1) * w + (cols - 1)
     wall = [(rows - 2) * w + (cols - 1)]
     goal, wall = mg.MazeGrid(rows, cols)
 
     runPI(rows, cols, goal, wall)
-    # runVI()
+    # runVI(rows, cols, goal, wall)
     # runMC()
     runAltPI(rows, cols, goal, wall)
 

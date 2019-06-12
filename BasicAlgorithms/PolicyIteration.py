@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from PIL import Image
+import time
 
 # This is the classic policy iteration algorithm
 def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid, wall, goal, mult):
@@ -17,6 +18,7 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
     iter = 0
     pi_iter = 0
 
+    start_time = time.time()
     while valueChange:
         valueChange = False
         iter += 1
@@ -59,12 +61,13 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
                     valueChange = True
 
 
-
+    totTime = time.time() - start_time
+    print("Run time in seconds: ", totTime)
     print("Num iters", iter)
     print("Policy Improvement iters", pi_iter)
     # GraphThePolicy(policy, Value, numR, numC)
 
-    return Value, policy, iter
+    return Value, policy, iter, totTime
 
 
 
@@ -292,11 +295,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
         if (i - 1 < 0 or j + 1 > col - 1) or bb:
             return False
@@ -311,11 +314,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
         if (i - 1 < 0 or j - 1 < 0) or bb:
             return False
@@ -330,11 +333,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
         if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
             return False
@@ -349,11 +352,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
 
         if (i + 1 > rows - 1 or j - 1 < 0) or bb:

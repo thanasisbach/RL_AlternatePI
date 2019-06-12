@@ -1,6 +1,9 @@
 import numpy as np
 import random
 import PolicyIteration as pi
+import time
+
+from numpy.core.multiarray import ndarray
 
 
 def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, wall, goal, mult, transition, reward,
@@ -17,31 +20,64 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
 
     Value = np.zeros(len(states))  # this is the value function
     # print("Col Policy:", polC, "Row Policy:", polR)
-    policy, it = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
+    policyy, it = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
                                gamma)  # initPolicy(states, nActions)
 
+    policy = np.array(policyy)
     # print("Global Policy:", policy)
 
     cValueR = False
     cValueC = False
+    e = 1  # something small
     changeValue = True
     iter = 0
     extraIter = it
+    start_time = time.time()
+    prevValue = np.copy(Value)
+    prevPolicy = np.copy(policy)
+
     while changeValue:
         # print(iter)
         changeValue = False
         iter += 1
-        polR, Value, cValueR, policy, it = rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates
+        polR, Value, cValueR, policy, it, polC = rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates
                                                  , wall, transition, reward, gamma, mult, Value, nRowActions)
         extraIter += it
 
-        # combine the policies after improving one dimension
-        # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
-        # gamma)
+        # np.array_equal(prevValue, Value):
+        if np.max(Value - prevValue) < e:  # and np.array_equal(policy, prevPolicy):
+            # print("lol")
+            break
+            # print(prevValue)
+            # changeValue = False
+            # continue
 
-        polC, Value, cValueC, policy, it = colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates
+            # print("after row Pi Value: ", Value)
+            # print("prev Value: ", prevValue)
+            # print("Policy: ", policy)
+            # print(Value - prevValue)
+
+        prevValue = np.copy(Value)
+        prevPolicy = np.copy(policy)
+
+        polC, Value, cValueC, policy, it, polR = colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates
                                                  , wall, transition, reward, gamma, mult, Value, nColActions)
         extraIter += it
+
+        # print("after col Pi Value: ", Value)
+        # print("prev Value: ", prevValue)
+        if np.max(Value - prevValue) < e:  # and np.array_equal(policy, prevPolicy):
+            break
+            # changeValue = False
+            # continue
+
+            # print("after col Pi Value: ", Value)
+            # print("prev Value: ", prevValue)
+            # print("Policy: ", policy)
+            # print(Value - prevValue)
+
+        prevValue = np.copy(Value)
+        prevPolicy = np.copy(policy)
 
         # combine the policies after improving one dimension
         # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
@@ -61,15 +97,19 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # print("Value function:", Value)
         # print(iter)
         if iter > ( len(stateC) * len(stateR) * len(stateC)):
+            print("it doesnt conv")
             changeValue = False
 
     # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma)
+
+    totTime = time.time() - start_time
+    print("Run time in seconds: ", totTime)
     print("Alt PI iter:", iter)
     print("Policy Imp:", extraIter)
     # print("Row Policy:", polR)
     # print("Col Policy:", polC)
     # pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
-    return policy, Value, iter, extraIter
+    return policy, Value, iter, extraIter, totTime
 
 
 def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma,
@@ -104,6 +144,8 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
             q_best = Value[s]  # we assume that the current value is the best and we improve it
 
             for aR in nRowActions[sR]:  # maximize over actions
+                # new part
+                exIt += 1
                 aC = polC[sC]
 
                 a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions,
@@ -111,12 +153,12 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 exIt += et
                 pp = [a]
                 arr, acc = DecombinePolicy(pp)
-                if arr != aR:
-                    continue
+                # if arr != aR:
+                #     continue
                     # aR = arr
 
-                if policy[s] != a:
-                    exIt += et
+                # if policy[s] != a:
+                #     exIt += et
 
                 if a is None:
                     # print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
@@ -132,13 +174,14 @@ def rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
 
                 if q_sa > q_best:
                     polR[sR] = aR
+                    # polC[sC] = acc  # sooo new
                     policy[s] = a
                     # print(q_sa, q_best)
                     q_best = q_sa
                     # print(policy[s])
                     changeValue = True
 
-    return polR, Value, changeValue, policy, exIt
+    return polR, Value, changeValue, policy, exIt, polC
 
 
 def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates, wall, transition, reward, gamma,
@@ -166,10 +209,13 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
             if sR * mult + sC in wall:
                 continue
 
+
             s = gridStates[sR * mult + sC]
             q_best = Value[s]  # we assume that the current value is the best and we improve it
 
             for aC in nColActions[sC]:  # maximize over actions
+                # new part
+                exIt += 1
                 aR = polR[sR]
 
                 a, et = CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, len(stateR), len(stateC), nActions,
@@ -177,12 +223,13 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
                 exIt += et
                 pp = [a]
                 arr, acc = DecombinePolicy(pp)
-                if acc != aC:
-                    continue
+
+                # if acc != aC:
+                #     continue
                     # aC = acc
 
-                if policy[s] != a:
-                    exIt += et
+                # if policy[s] != a:
+                #     exIt += et
 
                 if a is None:
                     # print("errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrorrrrrrrrrrrrrrrrr")
@@ -200,12 +247,13 @@ def colPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridState
 
                 if q_sa > q_best:
                     polC[sC] = aC
+                    # polR[sR] = arr  # sooo new
                     policy[s] = a
                     # print(q_sa, q_best, " column")
                     q_best = q_sa
                     changeValue = True
 
-    return polC, Value, changeValue, policy, exIt
+    return polC, Value, changeValue, policy, exIt, polR
 
 
 def PossibleColActions(states):
@@ -676,11 +724,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
         if (i - 1 < 0 or j + 1 > col - 1) or bb:
             return False
@@ -695,11 +743,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 2, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
         if (i - 1 < 0 or j - 1 < 0) or bb:
             return False
@@ -714,11 +762,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 0, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
         if (i + 1 > rows - 1 or j + 1 > col - 1) or bb:
             return False
@@ -733,11 +781,11 @@ def validAction(s, a, grid, rows, col, wall, mult):
                 bb = True
 
         # new part for valid actions
-        if not bb:
-            if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
-                bb = False
-            else:
-                bb = True
+        # if not bb:
+        #     if validAction(s, 1, grid, rows, col, wall, mult) or validAction(s, 3, grid, rows, col, wall, mult):
+        #         bb = False
+        #     else:
+        #         bb = True
 
         if (i + 1 > rows - 1 or j - 1 < 0) or bb:
             return False
