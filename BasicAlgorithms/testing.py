@@ -5,6 +5,7 @@ import AlternatePI as api
 import MonteCarlo as mc
 import MDP as m
 import AltMDP as am
+import AAAPI as aaa
 import PCA as pca
 import OptPolicy as op
 import MazeGenerator as mg
@@ -50,7 +51,7 @@ def runVI(nRows, nCols, goalP, wallP):
     # well this is the part where we will use pca with the "optimal" Value function that PI returns
     # pca.Pca(v, p, mdp.numRows, mdp.numCol)
 
-    op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
+    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
 
 
 def runPI(rows, cols, goal, wall):
@@ -70,10 +71,11 @@ def runPI(rows, cols, goal, wall):
     v, p, it, time = pi.PolicyIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
                               mdp.grid, mdp.wall, mdp.goal, mdp.mult)
 
+    print(v)
     # well this is the part where we will use pca with the "optimal" Value function that PI returns
     # pca.Pca(v, p, mdp.numRows, mdp.numCol)
 
-    op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
+    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
     Count(p)
 
 
@@ -94,7 +96,33 @@ def runAltPI(rows, cols, goal, wall):
     p, v, it, altit, time = api.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA, mdp.actionsB, mdp.grid,
                            mdp.gridStates, mdp.wall, mdp.goal, mdp.mult, mdp.transition, mdp.reward, mdp.gamma)
 
-    op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
+    print("value: ", v)
+    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
+
+
+def AAAPI(rows, cols, goal, wall):
+    nRows = rows
+    nCols = cols
+    w = nRows * nCols
+    # wallP = [1 * w + 2, 0 * w, 2]
+    # goalP = 2 * w + 2
+
+    goalP, wallP = goal, wall  # mg.MazeGrid(nRows, nCols)
+
+    mdp = am.AltMDP(nRows, nRows, wallP, goalP)
+    mdp.CreateGrid()
+    mdp.TnR()
+    mdp.InitRnT()
+
+    p, v, it, altit, time = aaa.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA,
+                                            mdp.actionsB, mdp.grid,
+                                            mdp.gridStates, mdp.wall, mdp.goal, mdp.mult, mdp.transition, mdp.reward,
+                                            mdp.gamma)
+
+    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
+
+
+    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
 
 
 def Count(policy):
@@ -108,13 +136,15 @@ def Count(policy):
 
 
 def main():
-    rows = 40
-    cols = 40
+    rows = 50
+    cols = 50
     w = rows * cols
     goal = (rows - 1) * w + (cols - 1)
     wall = [(rows - 2) * w + (cols - 1)]
     goal, wall = mg.MazeGrid(rows, cols)
+    # goal, wall = mg.gridFigure(rows, cols)
 
+    # AAAPI(rows, cols, goal, wall)
     runPI(rows, cols, goal, wall)
     # runVI(rows, cols, goal, wall)
     # runMC()

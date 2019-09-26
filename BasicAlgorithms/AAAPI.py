@@ -28,7 +28,7 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
 
     cValueR = False
     cValueC = False
-    e = 0.001  # something small
+    e = 1  # something small
     changeValue = True
     iter = 0
     extraIter = it
@@ -40,7 +40,6 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # print(iter)
         changeValue = False
         iter += 1
-
         polR, Value, cValueR, policy, it, polC = rowPI(policy, polC, polR, stateR, stateC, nStates, nActions, grid, gridStates
                                                  , wall, transition, reward, gamma, mult, Value, nRowActions)
         extraIter += it
@@ -49,7 +48,14 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         if np.max(Value - prevValue) < e:  # and np.array_equal(policy, prevPolicy):
             # print("lol")
             break
+            # print(prevValue)
+            # changeValue = False
+            # continue
 
+            # print("after row Pi Value: ", Value)
+            # print("prev Value: ", prevValue)
+            # print("Policy: ", policy)
+            # print(Value - prevValue)
 
         prevValue = np.copy(Value)
         prevPolicy = np.copy(policy)
@@ -62,7 +68,13 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # print("prev Value: ", prevValue)
         if np.max(Value - prevValue) < e:  # and np.array_equal(policy, prevPolicy):
             break
+            # changeValue = False
+            # continue
 
+            # print("after col Pi Value: ", Value)
+            # print("prev Value: ", prevValue)
+            # print("Policy: ", policy)
+            # print(Value - prevValue)
 
         prevValue = np.copy(Value)
         prevPolicy = np.copy(policy)
@@ -71,6 +83,9 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
         # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value,
         # gamma)
 
+        # print("col: ", polC)
+        # print("row: ", polR)
+        # print("glob", policy)
         if cValueR or cValueC:
             # print(iter, cValueC, cValueR)
             changeValue = True
@@ -88,8 +103,8 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
     # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma)
 
     totTime = time.time() - start_time
-    print("Run time in seconds: ", totTime)
-    print("Alt PI iter:", iter)
+    print("AAA Run time in seconds: ", totTime)
+    print("AAA PI iter:", iter)
     print("Policy Imp:", extraIter)
     # print("Row Policy:", polR)
     # print("Col Policy:", polC)
@@ -513,27 +528,27 @@ def CombAction(aR, aC, sR, sC, grid, wall, mult, gridStates, lenR, lenC, nAction
         ##############################################################################
 
         # policy improvement
-        # case = True
-        # while case:
-        #     # instead of random action this helps value function convergence
-        #     # policy evaluation part
-        #     case = False
-        #
-        #     q_best = Value[s]  # we assume that the current value is the best and we improve it
-        #     for aa in nActions[s]:  # maximize over actions
-        #
-        #         # s1 = NextState(s, aa, lenC)  # nStates[s][cnt]  #
-        #         q_sa = 0
-        #         for s1 in nStates[s]:
-        #             # print(s, transition[s][aa], s1)
-        #             q_sa += transition[s][aa][s1] * (reward[s][aa][s1] + gamma * Value[s1])
-        #
-        #         if q_sa > q_best:
-        #             a = aa
-        #             # policy[s] = a
-        #             q_best = q_sa
-        #             case = True
-        #             Value[s] = q_best
+        case = True
+        while case:
+            # instead of random action this helps value function convergence
+            # policy evaluation part
+            case = False
+
+            q_best = Value[s]  # we assume that the current value is the best and we improve it
+            for aa in nActions[s]:  # maximize over actions
+
+                # s1 = NextState(s, aa, lenC)  # nStates[s][cnt]  #
+                q_sa = 0
+                for s1 in nStates[s]:
+                    # print(s, transition[s][aa], s1)
+                    q_sa += transition[s][aa][s1] * (reward[s][aa][s1] + gamma * Value[s1])
+
+                if q_sa > q_best:
+                    a = aa
+                    # policy[s] = a
+                    q_best = q_sa
+                    case = True
+                    Value[s] = q_best
         # print(a)
         return a, 1
 
@@ -611,27 +626,28 @@ def CombinePolicy(pa1, pa2, gridStates, grid, wall, mult, nActions, nStates, tra
                 ############################################################
 
                 # policy improvement
-                # ct += 1
-                # case = True
-                # while case:
-                #     case = False
-                #     # instead of random action this helps value function convergence
-                #     # policy improvement part
-                #
-                #     q_best = Value[s]  # we assume that the current value is the best and we improve it
-                #     for a in nActions[s]:  # maximize over actions
-                #
-                #         # s1 = NextState(s, a, len(pa2))  # nStates[s][cnt]
-                #         q_sa = 0
-                #         for s1 in nStates[s]:
-                #             q_sa += transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
-                #         # print("q_best", q_best, "q_a", q_sa, "action", a)
-                #         if q_sa > q_best:
-                #             act[len(act) - 1] = a
-                #             # policy[s] = a
-                #             q_best = q_sa
-                #             Value[s] = q_best
-                #             case = True
+                ct += 1
+                case = True
+                while case:
+                    case = False
+                    # instead of random action this helps value function convergence
+                    # policy improvement part
+
+                    q_best = Value[s]  # we assume that the current value is the best and we improve it
+                    for a in nActions[s]:  # maximize over actions
+
+                        # s1 = NextState(s, a, len(pa2))  # nStates[s][cnt]
+                        q_sa = 0
+                        for s1 in nStates[s]:
+                            q_sa += transition[s][a][s1] * (reward[s][a][s1] + gamma * Value[s1])
+                        # print("q_best", q_best, "q_a", q_sa, "action", a)
+                        if q_sa > q_best:
+                            act[len(act) - 1] = a
+                            # policy[s] = a
+                            q_best = q_sa
+                            Value[s] = q_best
+                            case = True
+
                 # print(act[len(act) - 1])
 
             cntC += 1

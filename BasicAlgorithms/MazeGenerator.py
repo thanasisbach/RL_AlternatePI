@@ -94,8 +94,58 @@ def MazeGrid(r, c):
 
 
     print(wall)
+    print("wall number: ", len(wall), "grid size: ", r * c)
+    return goal, wall
+
+
+def gridFigure(rlen, clen):
+    imgx = 512
+    imgy = 512
+    image = Image.new("RGB", (imgx, imgy))
+    pixels = image.load()
+    pixels2 = image.load()
+
+
+    a = 0.01
+    gridLen = rlen * clen
+    wallLen = int(gridLen * a)
+    goal = (rlen - 1) * gridLen + (clen - 1)
+    gg = [goal, (rlen - 2) * gridLen + (clen - 2), (rlen - 2) * gridLen + (clen - 1), (rlen - 1) * gridLen + (clen - 2)]
+    # print(gg)
+    wall = []
+    for i in range(wallLen):
+        val = True
+
+        while val:
+            r = random.randint(0, rlen - 1)
+            c = random.randint(0, clen - 1)
+            w = r * gridLen + c
+            if (w not in wall) and (w not in gg):
+                wall.append(w)
+                val = False
+
+
+    maze = [[0 for x in range(rlen)] for y in range(clen)]
+    for ii in range(rlen):
+        for jj in range(clen):
+
+            kappa = ii * gridLen + jj
+            if kappa in wall:
+                maze[ii][jj] = 0
+            else:
+                maze[ii][jj] = 1
+
+    # image creation
+    for ky in range(imgy):
+        for kx in range(imgx):
+            m = maze[clen * ky // imgy][rlen * kx // imgx] * 255
+            pixels2[kx, ky] = (m, m, m)
+    image.save("wallGridWorld" + str(rlen) + "x" + str(clen) + ".png", "PNG")
+
+    print("wall number: ", len(wall), "grid size: ", gridLen)
     return goal, wall
 
 
 if __name__ == "__main__":
-    x, x = MazeGrid(25, 25)
+    x, y = gridFigure(25, 25)
+    # x, y = MazeGrid(60, 60)
