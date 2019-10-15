@@ -93,7 +93,7 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
     print("Policy Imp:", extraIter)
     # print("Row Policy:", polR)
     # print("Col Policy:", polC)
-    # pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
+    pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
     return policy, Value, iter, extraIter, totTime
 
 

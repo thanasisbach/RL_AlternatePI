@@ -65,7 +65,7 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
     print("Run time in seconds: ", totTime)
     print("Num iters", iter)
     print("Policy Improvement iters", pi_iter)
-    # GraphThePolicy(policy, Value, numR, numC)
+    GraphThePolicy(policy, Value, numR, numC)
 
     return Value, policy, iter, totTime
 

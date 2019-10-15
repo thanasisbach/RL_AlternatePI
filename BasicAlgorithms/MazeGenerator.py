@@ -106,14 +106,19 @@ def gridFigure(rlen, clen):
     pixels2 = image.load()
 
 
-    a = 0.01
+    a = 0.03
     gridLen = rlen * clen
-    wallLen = int(gridLen * a)
+    wallLen = 2  # int(gridLen * a)
     goal = (rlen - 1) * gridLen + (clen - 1)
     gg = [goal, (rlen - 2) * gridLen + (clen - 2), (rlen - 2) * gridLen + (clen - 1), (rlen - 1) * gridLen + (clen - 2)]
     # print(gg)
     wall = []
+    cc = {0: [5, 11], 1: [16, 6], 2: [2, 15], 3: [9, 13], 4: [17, 11], 5: [20, 2], 6: [17, 21], 7: [2, 18], 8: [18, 2],
+          9: [7, 14], 10: [24, 7], 11: [17, 13], 12: [20, 20], 13: [11, 24], 14: [23, 17], 15: [5, 20], 16: [4, 14], 17: [0, 14]}
+    # print(cc[0][1])
     for i in range(wallLen):
+
+        wall.append(cc[i][1] * gridLen + cc[i][0])
         val = True
 
         while val:
@@ -123,7 +128,6 @@ def gridFigure(rlen, clen):
             if (w not in wall) and (w not in gg):
                 wall.append(w)
                 val = False
-
 
     maze = [[0 for x in range(rlen)] for y in range(clen)]
     for ii in range(rlen):

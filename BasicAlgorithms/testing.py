@@ -71,7 +71,7 @@ def runPI(rows, cols, goal, wall):
     v, p, it, time = pi.PolicyIteration(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
                               mdp.grid, mdp.wall, mdp.goal, mdp.mult)
 
-    print(v)
+    # print(v)
     # well this is the part where we will use pca with the "optimal" Value function that PI returns
     # pca.Pca(v, p, mdp.numRows, mdp.numCol)
 
@@ -96,8 +96,8 @@ def runAltPI(rows, cols, goal, wall):
     p, v, it, altit, time = api.AlternatePI(mdp.states, mdp.statesA, mdp.statesB, mdp.actions, mdp.actionsA, mdp.actionsB, mdp.grid,
                            mdp.gridStates, mdp.wall, mdp.goal, mdp.mult, mdp.transition, mdp.reward, mdp.gamma)
 
-    print("value: ", v)
-    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
+    # print("value: ", v)
+    op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
 
 
 def AAAPI(rows, cols, goal, wall):
@@ -119,7 +119,7 @@ def AAAPI(rows, cols, goal, wall):
                                             mdp.gridStates, mdp.wall, mdp.goal, mdp.mult, mdp.transition, mdp.reward,
                                             mdp.gamma)
 
-    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
+    op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
 
 
     # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
@@ -136,19 +136,19 @@ def Count(policy):
 
 
 def main():
-    rows = 50
-    cols = 50
+    rows = 4
+    cols = 4
     w = rows * cols
     goal = (rows - 1) * w + (cols - 1)
-    wall = [(rows - 2) * w + (cols - 1)]
-    goal, wall = mg.MazeGrid(rows, cols)
+    wall = [(rows - 2) * w + (cols - 1), (rows - 2) * w + (cols - 2)]
+    # goal, wall = mg.MazeGrid(rows, cols)
     # goal, wall = mg.gridFigure(rows, cols)
 
-    # AAAPI(rows, cols, goal, wall)
-    runPI(rows, cols, goal, wall)
+    AAAPI(rows, cols, goal, wall)
+    # runPI(rows, cols, goal, wall)
     # runVI(rows, cols, goal, wall)
     # runMC()
-    runAltPI(rows, cols, goal, wall)
+    # runAltPI(rows, cols, goal, wall)
 
 
 if __name__ == "__main__":
