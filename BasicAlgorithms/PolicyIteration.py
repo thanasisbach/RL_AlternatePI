@@ -7,7 +7,6 @@ import time
 def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid, wall, goal, mult):
 
     nStates, nActions = PossibleStates(states, actions, grid, numR, numC, wall, mult)
-    # print(nStates,"\n", nActions)
 
     policy = initPolicy(states, nActions)  # [0 for s in states]
 
@@ -62,10 +61,10 @@ def PolicyIteration(states, actions, reward, transition, gamma, numR, numC, grid
 
 
     totTime = time.time() - start_time
-    print("Run time in seconds: ", totTime)
-    print("Num iters", iter)
-    print("Policy Improvement iters", pi_iter)
-    GraphThePolicy(policy, Value, numR, numC)
+    # print("Run time in seconds: ", totTime)
+    # print("Num iters", iter)
+    # print("Policy Improvement iters", pi_iter)
+    # GraphThePolicy(policy, Value, numR, numC)
 
     return Value, policy, iter, totTime
 
@@ -128,7 +127,7 @@ def PossibleStates(states, actions, grid, rows, col, wall, mult):
         for a in actions:
             if validAction(s, a, grid, rows, col, wall, mult):
                 if a == 0:  # right
-                    nStates[s] = arStates  # .append(s + 1)
+                    nStates[s] = arStates[s]  # .append(s + 1)
                     nActions[s].append(a)
 
                 elif a == 1:  # left

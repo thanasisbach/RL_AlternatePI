@@ -9,28 +9,8 @@ import AAAPI as aaa
 import PCA as pca
 import OptPolicy as op
 import MazeGenerator as mg
+import MDP_1D as mdp1
 from sklearn.decomposition import PCA
-
-
-def runMC():
-    nRows = 15
-    nCols = 15
-    w = nRows * nCols
-    wallP = [1 * w + 2]
-    goalP = 2 * w + 2
-
-    mdp = m.MDP(nRows, nRows, wallP, goalP)
-    mdp.CreateGrid()
-    mdp.TnR()
-    mdp.InitRnT()
-
-    v, p = mc.FirstVisitMC(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
-                           mdp.grid, mdp.wall, mdp.goal, mdp.mult)
-
-    # well this is the part where we will use pca with the "optimal" Value function that PI returns
-    # pca.Pca(v, p, mdp.numRows, mdp.numCol)
-
-    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
 
 
 def runVI(nRows, nCols, goalP, wallP):
@@ -40,7 +20,7 @@ def runVI(nRows, nCols, goalP, wallP):
     # goalP = 2 * 9 + 2
     # wallP = [1 * 9 + 2]
 
-    mdp = m.MDP(nRows, nRows, wallP, goalP)
+    mdp = m.MDP(nRows, nCols, wallP, goalP)
     mdp.CreateGrid()
     mdp.TnR()
     mdp.InitRnT()
@@ -63,7 +43,7 @@ def runPI(rows, cols, goal, wall):
 
     goalP, wallP = goal, wall # mg.MazeGrid(nRows, nCols)
 
-    mdp = m.MDP(nRows, nRows, wallP, goalP)
+    mdp = m.MDP(nRows, nCols, wallP, goalP)
     mdp.CreateGrid()
     mdp.TnR()
     mdp.InitRnT()
@@ -88,7 +68,7 @@ def runAltPI(rows, cols, goal, wall):
 
     goalP, wallP = goal, wall # mg.MazeGrid(nRows, nCols)
 
-    mdp = am.AltMDP(nRows, nRows, wallP, goalP)
+    mdp = am.AltMDP(nRows, nCols, wallP, goalP)
     mdp.CreateGrid()
     mdp.TnR()
     mdp.InitRnT()
@@ -109,7 +89,7 @@ def AAAPI(rows, cols, goal, wall):
 
     goalP, wallP = goal, wall  # mg.MazeGrid(nRows, nCols)
 
-    mdp = am.AltMDP(nRows, nRows, wallP, goalP)
+    mdp = am.AltMDP(nRows, nCols, wallP, goalP)
     mdp.CreateGrid()
     mdp.TnR()
     mdp.InitRnT()
@@ -124,6 +104,21 @@ def AAAPI(rows, cols, goal, wall):
 
     # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numA, mdp.numB, mdp.mult)
 
+def runMC(nRows, nCols, wallP, goalP):
+
+    mdp = mdp1.MDP(nRows, nCols, goalP, wallP)
+    mdp.CreateGrid()
+    mdp.TnR()
+    mdp.InitRnT()
+
+    v, p = mc.FirstVisitMC(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
+                           mdp.grid, mdp.wall, mdp.goal, mdp.mult)
+
+    # well this is the part where we will use pca with the "optimal" Value function that PI returns
+    # pca.Pca(v, p, mdp.numRows, mdp.numCol)
+
+    # op.optimalPolicy(mdp.states, mdp.actions, mdp.grid, mdp.goal, mdp.wall, p, mdp.numCol, mdp.numRows, mdp.mult)
+
 
 def Count(policy):
 
@@ -136,18 +131,18 @@ def Count(policy):
 
 
 def main():
-    rows = 4
-    cols = 4
+    rows = 3
+    cols = 3
     w = rows * cols
     goal = (rows - 1) * w + (cols - 1)
-    wall = [(rows - 2) * w + (cols - 1), (rows - 2) * w + (cols - 2)]
+    wall = [(rows - 2) * w + (cols - 1)]  # , (rows - 2) * w + (cols - 2)]
     # goal, wall = mg.MazeGrid(rows, cols)
     # goal, wall = mg.gridFigure(rows, cols)
 
-    AAAPI(rows, cols, goal, wall)
-    # runPI(rows, cols, goal, wall)
+    # AAAPI(rows, cols, goal, wall)
+    runPI(rows, cols, goal, wall)
     # runVI(rows, cols, goal, wall)
-    # runMC()
+    # runMC(rows, cols, goal, wall)
     # runAltPI(rows, cols, goal, wall)
 
 

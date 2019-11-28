@@ -7,6 +7,7 @@
           <option value="E303" />
           <option value="E302" />
           <option value="E266" />
+          <option value="E117" />
         </list>
       </option>
     </inspection_tool>
@@ -16,6 +17,17 @@
           <option value="N802" />
           <option value="N803" />
           <option value="N806" />
+          <option value="N811" />
+          <option value="N813" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="MDP_1D" />
+          <option value="PolicyIteration" />
+          <option value="PI_3D" />
         </list>
       </option>
     </inspection_tool>

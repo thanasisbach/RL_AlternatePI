@@ -9,7 +9,7 @@ def FirstVisitMC(states, actions, reward, transition, gamma, numR, numC, grid, w
 
     policy = Initialize(states, nActions)
     print(policy)
-    MonteCarloRun = 10000
+    MonteCarloRun = 50000
     Q, Returns = InitQ(states, actions, grid, wall, mult, numR, numC)
     print(Q)
     # Returns =
@@ -21,8 +21,8 @@ def FirstVisitMC(states, actions, reward, transition, gamma, numR, numC, grid, w
         G = 0  # total reward for the episode
         ep_s = []   # that's the state list of the episodes
         for epL in range(len(episode), 0, -1):
-            s = episode[epL-1][0]
-            a = episode[epL-1][1]
+            s = episode[epL-1][0]  # zero for the state
+            a = episode[epL-1][1]  # one for the action
             ep_s.append(s)
 
             # This is the return(reward) that follows the first occurrence os s, a
@@ -80,22 +80,27 @@ def GenEpisode(policy, numC, reward, wall, grid, nStates, nActions):
     ep = []
 
     # getting a random first state for the episode
-    s = rnd.randint(1, len(policy))
-    s -= 1
-    if grid[s] == wall:
+    val = True
+    while val:
+        s = rnd.randint(1, len(policy))
         s -= 1
+        if grid[s] in wall:
+            val = True
+        else:
+            val = False
 
     for i in range(numC):
 
         prob = rnd.random()
         cnt = 0
+        # print(nActions[s])
         for j in range(len(nActions[s])):
             a = nActions[s][j]
             cnt = cnt + policy[s][a]
 
             if prob <= cnt:
                 # state - action - reward
-                ep.append((s, a, reward[s][a][nStates[s][j]]))
+                ep.append((s, a, reward[s][a][nStates[s][j]] ))
                 ss = nStates[s][j]
                 s = ss
                 break
@@ -113,7 +118,7 @@ def InitQ(states, actions, grid, wall, mult, rows, col):
 
     for s in states:
 
-        if (grid[s] // mult == wall // mult) and (grid[s] % mult == wall % mult):
+        if grid[s] in wall:
             continue
         Q[s] = {}
         Returns[s] = {}
@@ -132,28 +137,9 @@ def InitQ(states, actions, grid, wall, mult, rows, col):
                     Q[s][a] = 0
                     Returns[s][a] = []
 
-                elif a == 3:  # down
+                else:  # down
                     Q[s][a] = 0
                     Returns[s][a] = []
 
-                elif a == 4:  # up-right
-                    Q[s][a] = 0
-                    Returns[s][a] = []
-
-                elif a == 5:  # up-left
-                    Q[s][a] = 0
-                    Returns[s][a] = []
-
-                elif a == 6:  # down-right
-                    Q[s][a] = 0
-                    Returns[s][a] = []
-
-                elif a == 7:  # down-left
-                    Q[s][a] = 0
-                    Returns[s][a] = []
-
-                else:  # do-nothing action
-                    Q[s][a] = 0
-                    Returns[s][a] = []
 
     return Q, Returns

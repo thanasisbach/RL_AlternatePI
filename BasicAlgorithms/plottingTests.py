@@ -1,4 +1,7 @@
+from typing import Any, Union
+
 import numpy as np
+import statistics as st
 import PolicyIteration as pi
 import ValueIteration as vi
 import AlternatePI as api
@@ -9,20 +12,12 @@ import AltMDP as am
 import PCA as pca
 import OptPolicy as op
 import matplotlib.pyplot as plt
+from numpy.core.multiarray import ndarray
 from scipy import optimize
 import random
 import math
 import MazeGenerator as mg
 
-def runMC(nRows, nCols, wallP, goalP):
-    mdp = m.MDP(nRows, nCols, wallP, goalP)
-    mdp.CreateGrid()
-    mdp.TnR()
-    mdp.InitRnT()
-
-    v, p = mc.FirstVisitMC(mdp.states, mdp.actions, mdp.reward, mdp.transition, mdp.gamma, mdp.numRows, mdp.numCol,
-                           mdp.grid, mdp.wall, mdp.goal, mdp.mult)
-    return v, p
 
 def runAAAPI(nRows, nCols, wallP, goalP):
     mdp = am.AltMDP(nRows, nCols, wallP, goalP)
@@ -83,49 +78,6 @@ def runVI(nRows, nCols, wallP, goalP):
     return time
 
 
-def mask(max_size, wall_num_portion):
-    row_inc = 3
-    col_inc = 3
-    wall_inc = 0
-    wall_list = []
-    wall_x_list = []
-    wall_y_list = []
-
-    while col_inc < max_size:
-
-        while row_inc <= col_inc:
-
-            wall_num = math.ceil(row_inc * col_inc * wall_num_portion)
-            wall_x_list = random.sample(range(row_inc), wall_num + 1)
-            wall_y_list = random.sample(range(col_inc), wall_num + 1)
-            multiple = row_inc * col_inc
-
-            while wall_inc < wall_num:
-                wall_position_as_grid = wall_x_list[wall_inc] * multiple + wall_y_list[wall_inc]
-                wall_list.append(wall_position_as_grid)
-                wall_inc += 1
-            wall_inc = 0
-            goal = wall_x_list[wall_num] * multiple + wall_y_list[wall_num]
-
-            print("wall_num", wall_num)
-            print("multiple:", multiple)
-            print("row size :", row_inc, "coloumn size:", col_inc)
-            print("wall_num", wall_num)
-            print("wall coordiante:", wall_x_list[0], wall_y_list[0], wall_list[0])
-            print("goal corrdiante:", wall_x_list[wall_num], wall_y_list[wall_num], goal)
-            runAltPI(row_inc, col_inc, wall_list[0], goal)
-            # runPI(row_inc, col_inc, wall_list[0],goal)
-            # runMC(row_inc, col_inc, wall_list[0],goal)
-            # row_inc+=1
-
-            wall_list = []
-            wall_x_list = []
-            wall_y_list = []
-
-        row_inc = 3
-        col_inc += 1
-    return
-
 
 def different_square_with_worst_case(size):
     length = len(size)
@@ -134,40 +86,77 @@ def different_square_with_worst_case(size):
     run_alt_pi = []
     run_pi = []
     run_vi = []
+    MeanAAAPI = []
+    stdAAAPI = []
+    MeanAPI = []
+    stdAPI = []
+    MeanPI = []
+    stdPI = []
+    MeanVI = []
+    stdVI = []
+    repetition = 10
 
     while i < length:
-        size_inner = size[i]
-        multiple = size_inner
-        # goal = (size[i] - 1) * (size[i] * size[i]) + (size[i] - 1)
-        # wall = [-1]
-        # goal, wall = mg.MazeGrid(size[i], size[i])
-        goal, wall = mg.gridFigure(size[i], size[i])
 
-        # p0 = runAAAPI(size_inner, size_inner, wall, goal)
-        # run_aaaPI.append(p0)
+        run_aaaPI = []
+        run_alt_pi = []
+        run_pi = []
+        run_vi = []
 
-        p1 = runAltPI(size_inner, size_inner, wall, goal)
-        run_alt_pi.append(p1)
 
-        # p2 = runPI(size_inner, size_inner, wall, goal)
-        # run_pi.append(p2)
+        for j in range(repetition):
+            size_inner = size[i]
+            multiple = size_inner
+            # goal = (size[i] - 1) * (size[i] * size[i]) + (size[i] - 1)
+            # wall = [-1]
+            goal, wall = mg.MazeGrid(size[i], size[i])
+            # goal, wall = mg.gridFigure(size[i], size[i])
 
-        # runMC(size_inner,size_inner,wall,goal)
+            p0 = runAAAPI(size_inner, size_inner, wall, goal)
+            run_aaaPI.append(p0)
 
-        # p4 = runVI(size_inner, size_inner, wall, goal)
-        # run_vi.append(p4)
+            # p1 = runAltPI(size_inner, size_inner, wall, goal)
+            # run_alt_pi.append(p1)
+
+            p2 = runPI(size_inner, size_inner, wall, goal)
+            run_pi.append(p2)
+
+            # runMC(size_inner,size_inner,wall,goal)
+
+            p4 = runVI(size_inner, size_inner, wall, goal)
+            run_vi.append(p4)
+
+        MeanAAAPI.append(np.mean(run_aaaPI))
+        stdAAAPI.append(st.stdev(run_aaaPI))
+        print("AAAPI", MeanAAAPI, stdAAAPI)
+
+        # MeanAPI.append(np.mean(run_alt_pi))
+        # stdAPI.append(st.stdev(run_alt_pi))
+
+        MeanPI.append(np.mean(run_pi))
+        stdPI.append(st.stdev(run_pi))
+        print("PI", MeanPI, stdPI)
+
+        MeanVI.append(np.mean(run_vi))
+        stdVI.append(st.stdev(run_vi))
+        print("VI", MeanVI, stdVI)
+
         i += 1
 
-    print("aaapi", run_aaaPI)
-    print("alt", run_alt_pi)
-    print("pi", run_pi)
-    print("run_vi", run_vi)
-    # return;
-    plot_test(size, run_alt_pi, run_pi, run_vi)
+    print("AVG time aaapi", MeanAAAPI)
+    print("STD AAAPI", stdAAAPI)
 
-def f_3(x, A, B, C, D):
+    print("AVG time alt", MeanAPI)
+    print("STD alt pi", stdAPI)
 
-    return A * x * x * x + B * x * x + C * x + D
+    print("AVG time PI", MeanPI)
+    print("STD pi", stdPI)
+
+    print("AVG time VI", MeanVI)
+    print("STD VI", stdVI)
+
+          # return;
+    # plot_test(size, run_alt_pi, run_pi, run_vi)
 
 
 def plot_test(size, alt_pi, pi, vi):
@@ -198,8 +187,10 @@ def plot_test(size, alt_pi, pi, vi):
 
 def main():
 
-    size = [10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
+    # size = [10, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
+    # size = [3, 5, 10, 15, 20, 25, 30, 60, 100, 150, 200]
     # size = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+    size = [60]
     # for i in size:  # 571 was the upper bound of iterations
     #     size.append(i)
     # i += 20

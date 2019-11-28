@@ -53,12 +53,12 @@ def MazeGrid(r, c):
 
     maze = GenerateMaze(0, 0, mx, my, dx, dy, maze)
     # paint the maze
-    for ky in range(imgy):
-        for kx in range(imgx):
-            m = maze[my * ky // imgy][mx * kx // imgx] * 255
-            pixels[kx, ky] = (m, m, m)
-    image.save("RandomMaze_" + str(mx) + "x" + str(my) + ".png", "PNG")
-    print(maze)
+    # for ky in range(imgy):
+    #     for kx in range(imgx):
+    #         m = maze[my * ky // imgy][mx * kx // imgx] * 255
+    #         pixels[kx, ky] = (m, m, m)
+    # image.save("RandomMaze_" + str(mx) + "x" + str(my) + ".png", "PNG")
+    # print(maze)
     # print(len(maze))
     # print(len(maze[0]))
     mm = r * c
@@ -84,17 +84,17 @@ def MazeGrid(r, c):
 
 
 
-    for ky in range(imgy):
-        for kx in range(imgx):
-            m = maze2[my * ky // imgy][mx * kx // imgx] * 255
-            pixels2[kx, ky] = (m, m, m)
-    image.save("testMaze_" + str(mx) + "x" + str(my) + ".png", "PNG")
+    # for ky in range(imgy):
+    #     for kx in range(imgx):
+    #         m = maze2[my * ky // imgy][mx * kx // imgx] * 255
+    #         pixels2[kx, ky] = (m, m, m)
+    # image.save("testMaze_" + str(mx) + "x" + str(my) + ".png", "PNG")
 
     ##########################################
 
 
-    print(wall)
-    print("wall number: ", len(wall), "grid size: ", r * c)
+    # print(wall)
+    # print("wall number: ", len(wall), "grid size: ", r * c)
     return goal, wall
 
 
@@ -106,19 +106,22 @@ def gridFigure(rlen, clen):
     pixels2 = image.load()
 
 
-    a = 0.03
+    a = 0.01
     gridLen = rlen * clen
-    wallLen = 2  # int(gridLen * a)
+    wallLen = int(gridLen * a)
+    if wallLen == 0:
+        wallLen = 1
+
     goal = (rlen - 1) * gridLen + (clen - 1)
     gg = [goal, (rlen - 2) * gridLen + (clen - 2), (rlen - 2) * gridLen + (clen - 1), (rlen - 1) * gridLen + (clen - 2)]
     # print(gg)
     wall = []
-    cc = {0: [5, 11], 1: [16, 6], 2: [2, 15], 3: [9, 13], 4: [17, 11], 5: [20, 2], 6: [17, 21], 7: [2, 18], 8: [18, 2],
-          9: [7, 14], 10: [24, 7], 11: [17, 13], 12: [20, 20], 13: [11, 24], 14: [23, 17], 15: [5, 20], 16: [4, 14], 17: [0, 14]}
+    # cc = {0: [5, 11], 1: [16, 6], 2: [2, 15], 3: [9, 13], 4: [17, 11], 5: [20, 2], 6: [17, 21], 7: [2, 18], 8: [18, 2],
+    #       9: [7, 14], 10: [24, 7], 11: [17, 13], 12: [20, 20], 13: [11, 24], 14: [23, 17], 15: [5, 20], 16: [4, 14], 17: [0, 14]}
     # print(cc[0][1])
     for i in range(wallLen):
 
-        wall.append(cc[i][1] * gridLen + cc[i][0])
+        # wall.append(cc[i][1] * gridLen + cc[i][0])
         val = True
 
         while val:
@@ -140,13 +143,13 @@ def gridFigure(rlen, clen):
                 maze[ii][jj] = 1
 
     # image creation
-    for ky in range(imgy):
-        for kx in range(imgx):
-            m = maze[clen * ky // imgy][rlen * kx // imgx] * 255
-            pixels2[kx, ky] = (m, m, m)
-    image.save("wallGridWorld" + str(rlen) + "x" + str(clen) + ".png", "PNG")
+    # for ky in range(imgy):
+    #     for kx in range(imgx):
+    #         m = maze[clen * ky // imgy][rlen * kx // imgx] * 255
+    #         pixels2[kx, ky] = (m, m, m)
+    # image.save("wallGridWorld" + str(rlen) + "x" + str(clen) + ".png", "PNG")
 
-    print("wall number: ", len(wall), "grid size: ", gridLen)
+    # print("wall number: ", len(wall), "grid size: ", gridLen)
     return goal, wall
 
 

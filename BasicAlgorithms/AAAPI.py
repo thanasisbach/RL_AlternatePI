@@ -103,14 +103,14 @@ def AlternatePI(states, stateC, stateR, actions, actC, actR, grid, gridStates, w
     # policy = CombinePolicy(polR, polC, gridStates, grid, wall, mult, nActions, nStates, transition, reward, Value, gamma)
 
     totTime = time.time() - start_time
-    print("AAA Run time in seconds: ", totTime)
-    print("AAA PI iter:", iter)
-    print("Policy Imp:", extraIter)
+    # print("AAA Run time in seconds: ", totTime)
+    # print("AAA PI iter:", iter)
+    # print("Policy Imp:", extraIter)
     # print("Row Policy:", polR)
     # print("Col Policy:", polC)
-    pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
-    print("col policy: ", polC)
-    print("row policyL, ", polR)
+    # pi.GraphThePolicy(policy, Value, len(stateR), len(stateC))
+    # print("col policy: ", polC)
+    # print("row policyL, ", polR)
     return policy, Value, iter, extraIter, totTime
 
 
